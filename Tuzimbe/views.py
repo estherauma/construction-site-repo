@@ -7,3 +7,6 @@ def index(request):
 
 def base(request):
     return render(request, 'base.html')
+
+def add_workers(request):
+    return render(request, 'workers/add-workers.html')
