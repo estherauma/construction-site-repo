@@ -1,0 +1,23 @@
+.container {
+
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+}
+.content{
+    padding: 20px;
+    margin-top: 20px;
+}
+
+
+
+
+#heading {
+    text-align: center;
+}
+
+ 
+.navbar a:hover,.dropdown:hover {
+    background-color: blanchedalmond;
+} 
+
