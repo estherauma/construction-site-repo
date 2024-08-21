@@ -1,0 +1,20 @@
+{% extends 'pages/base.html' %}
+{% block content %}
+
+<h3>WORKER DETAILS</h3>
+
+
+    <div class="card" style="width: 30rem;">
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>First name:</strong> {{ worker.first_name }}</li>
+                <li class="list-group-item"><strong>Last Name:</strong> {{ worker.last_name }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ worker.email }}</li>
+            </ul>
+            <a href="{% url 'Tuzimbe:all-workers' %}" class="btn btn-primary mt-3">Back</a>
+        </div>
+    </div>
+
+
+
+{% endblock %}

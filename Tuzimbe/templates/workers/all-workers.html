@@ -10,6 +10,7 @@
                 <th>Last name</th>
                 <th>Phone number</th>
                 <th>Email</th>
+                <th>Details</th>
                 <th>Update</th>
                 
                 
@@ -22,6 +23,7 @@
                     <td>{{ worker.last_name }}</td>
                     <td>{{ worker.phone_number }}</td>
                     <td>{{ worker.email }}</td>
+                    <td><a href="{% url 'Tuzimbe:worker-details' worker.id %}" class="btn btn-primary">Details</a></td>
                     <td><a href="{% url 'Tuzimbe:update-workers' worker.id %}" class="btn btn-primary">Update</a></td>
                     
                 </tr>

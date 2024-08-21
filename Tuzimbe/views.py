@@ -33,3 +33,7 @@ def update_workers(request, pk):
             form.save()
             return redirect('Tuzimbe:all-workers')
     return render(request, 'workers/update-workers.html', {'form': form})
+
+def worker_details(request, pk):
+    worker = Worker.objects.get(id=pk)
+    return render(request, 'workers/worker-details.html', {'worker': worker})
