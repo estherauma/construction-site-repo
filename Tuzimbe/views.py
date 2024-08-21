@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .forms import WorkerForm
+from .forms import WorkerForm,AttendanceForm
 from .models import Worker
 
 # Create your views here.
@@ -42,3 +42,12 @@ def delete_workers(request, pk):
     worker = Worker.objects.get(id=pk)
     worker.delete()
     return redirect('Tuzimbe:all-workers')
+
+def worker_attendance(request):
+    form = AttendanceForm(request.POST)
+    if request.method == 'POST':
+        
+        if form.is_valid():
+            form.save()
+            return redirect('Tuzimbe:all-workers')
+    return render(request, 'workers/workers-attendance.html', {'form': form})
