@@ -2,6 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import MaterialsForm, UsageForm
 from django.core.exceptions import ValidationError
 from .models import Material, MaterialUsage
+from .serializers import MaterialSerializer
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.response import Response
 
 # Create your views here.
 
@@ -70,3 +75,81 @@ def material_usage(request):
         form = UsageForm()
     return render(request, 'materials/material_use.html', {'form': form})
 
+
+class MaterialDetailView(RetrieveAPIView):
+    queryset = Material.objects.all()
+    serializer_class = MaterialSerializer
+    lookup_field = 'id'
+
+class MaterialAllView(APIView):
+    def get(self, request):
+        materials = Material.objects.all()
+        serializer = MaterialSerializer(materials, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def post(self, request, *args, **kwargs):
+        serializer = MaterialSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                material_name = serializer.validated_data.get('name')
+                unit = serializer.validated_data.get('unit')
+                total_quantity_stocked = serializer.validated_data.get('total_quantity_stocked')
+
+                existing_material = Material.objects.filter(name=material_name, unit=unit).first()
+
+                if existing_material:
+                    existing_material.total_quantity_stocked += total_quantity_stocked
+                    existing_material.total_price = existing_material.total_quantity_stocked * existing_material.price_per_unit
+                    existing_material.save()
+                    return Response({"message": "Material Quantity updated successfully"}, status=status.HTTP_200_OK)
+                
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+            except ValidationError as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+       
+
+
+class MaterialDetailview(APIView):
+    def get(self, request, id,):
+        material = get_object_or_404(Material, id=id)
+        serializer = MaterialSerializer(material)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    def put(self, request, id, *args, **kwargs):
+        material = get_object_or_404(Material, id=id)
+        serializer = MaterialSerializer(material, data=request.data)
+        if serializer.is_valid():
+            try:
+                if serializer.validated_data.get('total_quantity_stocked') < 0:
+                    return Response({'error': 'Total quantity cannot be negative'}, status=status.HTTP_400_BAD_REQUEST)
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except ValidationError as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, id, *args, **kwargs):
+        material = get_object_or_404(Material, id=id)
+        serializer = MaterialSerializer(material, data=request.data, partial=True)
+        if serializer.is_valid():
+            try:
+                if serializer.validated_data.get('total_quantity_stocked') is not None and serializer.validated_data.get('total_quantity_stocked') < 0:
+                    return Response({'error': 'Total quantity cannot be negative'}, status=status.HTTP_400_BAD_REQUEST)
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except ValueError as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, id, *args, **kwargs):
+        try:
+            material = Material.objects.get(id=id)
+            material.delete()
+            return Response({"message": "Material deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except Material.DoesNotExist:
+            return Response({"error": "Material not found."}, status=status.HTTP_404_NOT_FOUND)
