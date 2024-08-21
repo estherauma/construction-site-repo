@@ -23,3 +23,13 @@ def add_workers(request):
 def all_workers(request):
     workers = Worker.objects.all()
     return render(request, 'workers/all-workers.html', {'workers': workers})
+
+def update_workers(request, pk):
+    worker = Worker.objects.get(id=pk)
+    form = WorkerForm(instance=worker)
+    if request.method == 'POST':
+        form = WorkerForm(request.POST, instance=worker)
+        if form.is_valid():
+            form.save()
+            return redirect('Tuzimbe:all-workers')
+    return render(request, 'workers/update-workers.html', {'form': form})
