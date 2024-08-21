@@ -1,24 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import MaterialsForm, UsageForm
+from .forms import WorkerForm,AttendanceForm,MaterialsForm,UsageForm
 from django.core.exceptions import ValidationError
-from .models import Material, MaterialUsage
+from .models import Material, MaterialUsage,Worker,Attendance
 from .serializers import MaterialSerializer
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from django.shortcuts import render,redirect
-from .forms import WorkerForm,AttendanceForm
-from .models import Worker,Attendance
-
-# For API
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from .serializers import WorkerSerializer
-from rest_framework import status
-from django.http import Http404
-from rest_framework import status
-from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -116,7 +105,7 @@ def index(request):
     return render(request, 'pages/index.html')
 
 def base(request):
-    return render(request, 'pages/base.html')
+    return render(request, 'base.html')
 
 def add_workers(request):
     if request.method == 'POST':
