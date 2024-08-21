@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list
+from .views import index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance
 
 app_name = "Tuzimbe"
 
@@ -13,4 +13,5 @@ urlpatterns = [
     path("delete-workers/<int:pk>/", delete_workers, name="delete-workers"),
     path("worker-attendance-form/", worker_attendance, name="worker-attendance-form"),
     path("attendance-list/", attendance_list, name="attendance-list"),
+    path("update-attendance/<int:pk>/", update_attendance, name="update-attendance"),
 ]

@@ -49,9 +49,19 @@ def worker_attendance(request):
         
         if form.is_valid():
             form.save()
-            return redirect('Tuzimbe:all-workers')
+            return redirect('Tuzimbe:attendance-list')
     return render(request, 'workers/workers-attendance.html', {'form': form})
 
 def attendance_list(request):
     attendance = Attendance.objects.all()
     return render(request, 'workers/attendance-list.html', {'attendances': attendance})
+
+def update_attendance(request, pk):
+    attendance = Attendance.objects.get(id=pk)
+    form = AttendanceForm(instance=attendance)
+    if request.method == 'POST':
+        form = AttendanceForm(request.POST, instance=attendance)
+        if form.is_valid():
+            form.save()
+            return redirect('Tuzimbe:attendance-list')
+    return render(request, 'workers/update-attendance.html', {'form': form})

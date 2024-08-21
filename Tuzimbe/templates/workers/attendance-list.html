@@ -9,6 +9,7 @@
                 <th>Time In</th>
                 <th>Time Out</th>
                 <th>Daily rate</th>
+                <th>Update</th>
             </tr>
         </thead>
         <tbody>
@@ -19,6 +20,9 @@
                 <td>{{ attendance.time_in }}</td>
                 <td>{{ attendance.time_out }}</td>
                 <td>UGX{{ attendance.daily_rate }}</td>
+                <td>
+                    <a href="{% url 'Tuzimbe:update-attendance' attendance.id %}" class="btn btn-primary">Update</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
