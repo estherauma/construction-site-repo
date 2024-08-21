@@ -7,8 +7,8 @@
     <title>{% block title %}Tuzimbe{% endblock %}</title>
     
     <link rel="stylesheet" href="{% static "css/base.css" %}" />
-    <link rel="stylesheet" href="{% static "css/forms.css" %}" />
-    <link rel="stylesheet" href="{% static "css/details.css" %}" />
+    <!-- <link rel="stylesheet" href="{% static "css/forms.css" %}" /> -->
+    <!-- <link rel="stylesheet" href="{% static "css/details.css" %}" /> -->
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 
@@ -37,8 +37,10 @@
                     Workers
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Add Workers</a></li>
-                  <li><a class="dropdown-item" href="#">All Workers</a></li>
+                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:add-workers' %}">Add Workers</a></li>
+                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:all-workers' %}">All Workers</a></li>
+                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:worker-attendance-form' %}">Add Attendance</a></li>
+                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:attendance-list' %}">Attendance List</a></li>
                 </ul>
               </li>
               <li class="nav-item dropdown">

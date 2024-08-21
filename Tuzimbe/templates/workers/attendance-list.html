@@ -1,0 +1,31 @@
+{% extends '../base.html' %}
+{% block content %}
+<h3>ATTENDANCE LIST</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Worker</th>
+                <th>Date</th>
+                <th>Time In</th>
+                <th>Time Out</th>
+                <th>Daily rate</th>
+                <th>Update</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in attendances %}
+            <tr>
+                <td>{{ attendance.worker }}</td>
+                <td>{{ attendance.date }}</td>
+                <td>{{ attendance.time_in }}</td>
+                <td>{{ attendance.time_out }}</td>
+                <td>UGX{{ attendance.daily_rate }}</td>
+                <td>
+                    <a href="{% url 'Tuzimbe:update-attendance' attendance.id %}" class="btn btn-primary">Update</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+{% endblock %}

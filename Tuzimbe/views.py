@@ -1,20 +1,167 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import MaterialsForm, UsageForm
+from .forms import WorkerForm,AttendanceForm,MaterialsForm,UsageForm
 from django.core.exceptions import ValidationError
-from .models import Material, MaterialUsage
+from .models import Material, MaterialUsage,Worker,Attendance
 from .serializers import MaterialSerializer
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
+from .serializers import WorkerSerializer
+from rest_framework.permissions import AllowAny
+
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
 
+# API Views
+
+
+class WorkerListAPIView(APIView):
+    def get(self, request):
+        workers = Worker.objects.all()
+        serializer = WorkerSerializer(workers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class WorkerDetailAPIView(APIView):
+    def get(self,request, pk):
+        try:
+            worker = Worker.objects.get(pk=pk)
+        except Worker.DoesNotExist:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = WorkerSerializer(worker)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class WorkerCreateAPIView(APIView):
+    def post(self, request):
+        serializer = WorkerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class WorkerUpdateAPIView(APIView):
+    def get_object(self, pk):
+        try:
+            return Worker.objects.get(pk=pk)
+        except Worker.DoesNotExist:
+            return None
+
+    def put(self, request, pk):
+        worker = self.get_object(pk)
+        if not worker:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = WorkerSerializer(worker, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, pk):
+        worker = self.get_object(pk)
+        if not worker:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = WorkerSerializer(worker, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        worker = self.get_object(pk)
+        if not worker:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        worker.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RegisterWorkerAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = WorkerSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+
+            response_data = {
+                "first_name": user.first_name,
+                "access_token": access_token,
+                "refresh_token": refresh_token
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#Template Views
 def index(request):
     return render(request, 'index.html')
 
 def base(request):
     return render(request, 'base.html')
+
+def add_workers(request):
+    if request.method == 'POST':
+        form = WorkerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('Tuzimbe:all-workers')
+    else:
+        form = WorkerForm()
+    return render(request, 'workers/add-workers.html', {'form': form})
+
+def all_workers(request):
+    workers = Worker.objects.all()
+    return render(request, 'workers/all-workers.html', {'workers': workers})
+
+def update_workers(request, pk):
+    worker = Worker.objects.get(id=pk)
+    form = WorkerForm(instance=worker)
+    if request.method == 'POST':
+        form = WorkerForm(request.POST, instance=worker)
+        if form.is_valid():
+            form.save()
+            return redirect('Tuzimbe:all-workers')
+    return render(request, 'workers/update-workers.html', {'form': form})
+
+def worker_details(request, pk):
+    worker = Worker.objects.get(id=pk)
+    return render(request, 'workers/worker-details.html', {'worker': worker})
+
+def delete_workers(request, pk):
+    worker = Worker.objects.get(id=pk)
+    worker.delete()
+    return redirect('Tuzimbe:all-workers')
+
+def worker_attendance(request):
+    form = AttendanceForm(request.POST)
+    if request.method == 'POST':
+        
+        if form.is_valid():
+            form.save()
+            return redirect('Tuzimbe:attendance-list')
+    return render(request, 'workers/workers-attendance.html', {'form': form})
+
+def attendance_list(request):
+    attendance = Attendance.objects.all()
+    return render(request, 'workers/attendance-list.html', {'attendances': attendance})
+
+def update_attendance(request, pk):
+    attendance = Attendance.objects.get(id=pk)
+    form = AttendanceForm(instance=attendance)
+    if request.method == 'POST':
+        form = AttendanceForm(request.POST, instance=attendance)
+        if form.is_valid():
+            form.save()
+            return redirect('Tuzimbe:attendance-list')
+    return render(request, 'workers/update-attendance.html', {'form': form})
 
 def add_material(request):
     error_message = None
