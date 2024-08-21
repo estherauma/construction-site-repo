@@ -14,5 +14,5 @@ class AttendanceForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super(AttendanceForm, self).__init__(*args, **kwargs)
-        # Populate the worker dropdown with all registered workers
+        
         self.fields['worker'].queryset = Worker.objects.all()

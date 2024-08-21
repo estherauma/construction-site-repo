@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from .forms import WorkerForm,AttendanceForm
-from .models import Worker
+from .models import Worker,Attendance
 
 # Create your views here.
 
@@ -51,3 +51,7 @@ def worker_attendance(request):
             form.save()
             return redirect('Tuzimbe:all-workers')
     return render(request, 'workers/workers-attendance.html', {'form': form})
+
+def attendance_list(request):
+    attendance = Attendance.objects.all()
+    return render(request, 'workers/attendance-list.html', {'attendances': attendance})

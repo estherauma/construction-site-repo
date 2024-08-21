@@ -32,15 +32,14 @@ class Attendance(models.Model):
             raise ValidationError({'daily_rate': 'Daily rate cannot be negative.'})
         
         now = timezone.now().time()
+        
         if self.time_in > now:
             raise ValidationError({'time_in': 'Time in cannot be in the future.'})
-        
-        if self.time_out > now:
-            raise ValidationError({'time_out': 'Time out cannot be in the future.'})
 
-        if self.time_out < self.time_in:
+        if self.time_in >= self.time_out:
             raise ValidationError({'time_out': 'Time out must be after time in.'})
 
+        
     def __str__(self):
         return f"{self.worker.first_name} {self.worker.last_name} {self.date}"
 
