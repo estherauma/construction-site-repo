@@ -1,0 +1,11 @@
+.card {
+    width: 400px;
+    height: auto;
+    margin: 0 auto;
+    font-family: 'Roboto';
+}
+
+.card-title{
+    text-align: center;
+    font-size: 30px;
+}

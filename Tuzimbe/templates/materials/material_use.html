@@ -1,0 +1,16 @@
+{% extends '../base.html' %}
+{% block content %}
+<div class="card">
+    <h2>Register Material Used</h2> 
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-secondary">Submit</button>
+    </form>
+</div>
+{% endblock %}
