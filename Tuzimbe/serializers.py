@@ -1,3 +1,10 @@
+from .models import Material
+from rest_framework import serializers
+
+class  MaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Material
+        fields = ['id', 'name',  'total_quantity_stocked','unit', 'price_per_unit']
 from .models import Worker
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
