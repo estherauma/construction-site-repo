@@ -15,7 +15,7 @@ def add_workers(request):
         form = WorkerForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('/')
+            return redirect('Tuzimbe:all-workers')
     else:
         form = WorkerForm()
     return render(request, 'workers/add-workers.html', {'form': form})

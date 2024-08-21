@@ -1,5 +1,31 @@
 {% extends 'pages/base.html' %}
 {% block content %}
-
-
+<h3>ALL WORKERS</h3>
+<div class="container">
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Phone number</th>
+                <th>Email</th>
+                
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for worker in workers %}
+                <tr>
+                    <td>{{ worker.first_name }}</td>
+                    <td>{{ worker.last_name }}</td>
+                    <td>{{ worker.phone_number }}</td>
+                    <td>{{ worker.email }}</td>
+                    
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+   
+</div>
 {% endblock %}
