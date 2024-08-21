@@ -37,3 +37,8 @@ def update_workers(request, pk):
 def worker_details(request, pk):
     worker = Worker.objects.get(id=pk)
     return render(request, 'workers/worker-details.html', {'worker': worker})
+
+def delete_workers(request, pk):
+    worker = Worker.objects.get(id=pk)
+    worker.delete()
+    return redirect('Tuzimbe:all-workers')

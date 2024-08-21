@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import index, base, add_workers,all_workers,update_workers,worker_details
+from .views import index, base, add_workers,all_workers,update_workers,worker_details,delete_workers
 
 app_name = "Tuzimbe"
 
@@ -9,5 +9,6 @@ urlpatterns = [
     path("add-workers/", add_workers, name="add-workers"),
     path("all-workers/", all_workers, name="all-workers"),
     path("update-workers/<int:pk>/", update_workers, name="update-workers"),
-    path("worker-details/<int:pk>/", worker_details, name="worker-details")
+    path("worker-details/<int:pk>/", worker_details, name="worker-details"),
+    path("delete-workers/<int:pk>/", delete_workers, name="delete-workers"),
 ]
