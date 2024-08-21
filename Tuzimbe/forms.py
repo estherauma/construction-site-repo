@@ -5,4 +5,4 @@ from django import forms
 class WorkerForm(forms.ModelForm):
     class Meta:
         model = Worker
-        fields = ['first_name', 'last_name', 'phone_number', 'email']
+        fields = ['first_name', 'last_name', 'phone_number', 'email', 'password']

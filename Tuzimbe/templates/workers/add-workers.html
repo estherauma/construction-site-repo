@@ -32,9 +32,15 @@
             value="{{ form.email.value|default_if_none:'' }}" class="form-control",required="True">
             
         </div>
-        <br>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
 
+        <div class="form-group">
+            <label for="{{ form.password.id_for_label }}">Email:</label>
+            <input type="password" name="{{ form.password.name }}" id="{{ form.password.id_for_label }}" 
+            value="{{ form.password.value|default_if_none:'' }}" class="form-control",required="True">
+            
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Add Worker</button>
+    </form>
 
 {% endblock %}
