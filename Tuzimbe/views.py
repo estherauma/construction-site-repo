@@ -2,8 +2,107 @@ from django.shortcuts import render,redirect
 from .forms import WorkerForm,AttendanceForm
 from .models import Worker,Attendance
 
+# For API
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import WorkerSerializer
+from rest_framework import status
+from django.http import Http404
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny
+
+from rest_framework_simplejwt.tokens import RefreshToken
+
 # Create your views here.
 
+# API Views
+
+
+class WorkerListAPIView(APIView):
+    def get(self, request):
+        workers = Worker.objects.all()
+        serializer = WorkerSerializer(workers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class WorkerDetailAPIView(APIView):
+    def get(self,request, pk):
+        try:
+            worker = Worker.objects.get(pk=pk)
+        except Worker.DoesNotExist:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = WorkerSerializer(worker)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class WorkerCreateAPIView(APIView):
+    def post(self, request):
+        serializer = WorkerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class WorkerUpdateAPIView(APIView):
+    def get_object(self, pk):
+        try:
+            return Worker.objects.get(pk=pk)
+        except Worker.DoesNotExist:
+            return None
+
+    def put(self, request, pk):
+        worker = self.get_object(pk)
+        if not worker:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = WorkerSerializer(worker, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, pk):
+        worker = self.get_object(pk)
+        if not worker:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = WorkerSerializer(worker, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        worker = self.get_object(pk)
+        if not worker:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        worker.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RegisterWorkerAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = WorkerSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+
+            response_data = {
+                "first_name": user.first_name,
+                "access_token": access_token,
+                "refresh_token": refresh_token
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#Template Views
 def index(request):
     return render(request, 'pages/index.html')
 

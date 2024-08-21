@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance
-
+from .views import WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, RegisterWorkerAPIView
 app_name = "Tuzimbe"
 
 urlpatterns = [
@@ -14,4 +14,11 @@ urlpatterns = [
     path("worker-attendance-form/", worker_attendance, name="worker-attendance-form"),
     path("attendance-list/", attendance_list, name="attendance-list"),
     path("update-attendance/<int:pk>/", update_attendance, name="update-attendance"),
+
+    # API URLS
+    path("api/workers/", WorkerListAPIView.as_view(), name="workers"),
+    path("api/workers/<int:pk>/", WorkerDetailAPIView.as_view(), name="workers"),
+    path("api/workers/<int:pk>/update/",WorkerUpdateAPIView.as_view(), name="worker-update"),
+    path("api/workers/create/", WorkerCreateAPIView.as_view(), name="worker-create"),
+    path('api/register/', RegisterWorkerAPIView.as_view(), name='user-register'),
 ]

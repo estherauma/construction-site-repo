@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+import uuid
+from uuid import uuid4
 
 from django.utils import timezone
 def validate_not_future_date(value):
