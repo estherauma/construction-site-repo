@@ -112,14 +112,14 @@ def add_workers(request):
         form = WorkerForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('Tuzimbe:all-workers')
+            return redirect('Tuzimbe:all_workers')
     else:
         form = WorkerForm()
-    return render(request, 'workers/add-workers.html', {'form': form})
+    return render(request, 'workers/add_workers.html', {'form': form})
 
 def all_workers(request):
     workers = Worker.objects.all()
-    return render(request, 'workers/all-workers.html', {'workers': workers})
+    return render(request, 'workers/all_workers.html', {'workers': workers})
 
 def update_workers(request, pk):
     worker = Worker.objects.get(id=pk)
@@ -128,17 +128,17 @@ def update_workers(request, pk):
         form = WorkerForm(request.POST, instance=worker)
         if form.is_valid():
             form.save()
-            return redirect('Tuzimbe:all-workers')
-    return render(request, 'workers/update-workers.html', {'form': form})
+            return redirect('Tuzimbe:all_workers')
+    return render(request, 'workers/update_workers.html', {'form': form})
 
 def worker_details(request, pk):
     worker = Worker.objects.get(id=pk)
-    return render(request, 'workers/worker-details.html', {'worker': worker})
+    return render(request, 'workers/worker_details.html', {'worker': worker})
 
 def delete_workers(request, pk):
     worker = Worker.objects.get(id=pk)
     worker.delete()
-    return redirect('Tuzimbe:all-workers')
+    return redirect('Tuzimbe:all_workers')
 
 def worker_attendance(request):
     form = AttendanceForm(request.POST)
@@ -146,12 +146,12 @@ def worker_attendance(request):
         
         if form.is_valid():
             form.save()
-            return redirect('Tuzimbe:attendance-list')
-    return render(request, 'workers/workers-attendance.html', {'form': form})
+            return redirect('Tuzimbe:attendance_list')
+    return render(request, 'workers/workers_attendance.html', {'form': form})
 
 def attendance_list(request):
     attendance = Attendance.objects.all()
-    return render(request, 'workers/attendance-list.html', {'attendances': attendance})
+    return render(request, 'workers/attendance_list.html', {'attendances': attendance})
 
 def update_attendance(request, pk):
     attendance = Attendance.objects.get(id=pk)
@@ -160,8 +160,8 @@ def update_attendance(request, pk):
         form = AttendanceForm(request.POST, instance=attendance)
         if form.is_valid():
             form.save()
-            return redirect('Tuzimbe:attendance-list')
-    return render(request, 'workers/update-attendance.html', {'form': form})
+            return redirect('Tuzimbe:attendance_list')
+    return render(request, 'workers/update_attendance.html', {'form': form})
 
 def add_material(request):
     error_message = None
