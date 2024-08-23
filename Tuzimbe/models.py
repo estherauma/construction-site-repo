@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 import uuid
 from uuid import uuid4
+from django.contrib.auth.models import AbstractUser
 
 from django.utils import timezone
 def validate_not_future_date(value):
@@ -103,4 +104,8 @@ class Attendance(models.Model):
         
     def __str__(self):
         return f"{self.worker.first_name} {self.worker.last_name} {self.date}"
+    
+
+
+        
 

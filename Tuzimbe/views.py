@@ -13,11 +13,26 @@ from django.contrib.auth.forms import UserCreationForm
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import UserCreationForm
+from .forms import UserCreationForm
+
 
 
 # Create your views here.
 
 # API Views
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Automatically log in the user after successful signup
+            return redirect('Tuzimbe:login')  # Redirect to a home page or another appropriate page
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'auth/signup.html', {'form': form})
+
 
 
 class WorkerListAPIView(APIView):
