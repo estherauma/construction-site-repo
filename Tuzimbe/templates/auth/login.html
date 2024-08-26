@@ -11,13 +11,38 @@
     <h3>Login To Continue</h3>
   
     <div class="form-container">
-        
         <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username:</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="error">
+                        {% for error in form.username.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <br>
+            
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">Password:</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="error">
+                        {% for error in form.password.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
             <button type="submit">Login</button>
-           </form> 
+        </form> 
+
     </div>
-   
+    <p>Don't have an account? <a href="{% url 'Tuzimbe:signup' %}">Signup</a></p> 
 </body>
 </html>

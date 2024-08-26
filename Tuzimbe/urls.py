@@ -28,7 +28,7 @@ urlpatterns = [
     path("worker_attendance_form/", worker_attendance, name="worker_attendance_form"),
     path("attendance_list/", attendance_list, name="attendance_list"),
     path("update_attendance/<int:pk>/", update_attendance, name="update_attendance"),
-    path('login/',LoginView.as_view(template_name ='auth/login.html'), name = 'login'),
+    path('login/', LoginView.as_view(template_name ='auth/login.html'), name = 'login'),
     path('signup/', signup, name='signup'),
 
     # API URLS
