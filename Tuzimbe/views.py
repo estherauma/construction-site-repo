@@ -11,9 +11,10 @@ from .serializers import WorkerSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.forms import UserCreationForm
 from .forms import UserCreationForm
+from django.contrib import messages
 
 
 
@@ -111,6 +112,7 @@ def index(request):
 
 def base(request):
     return render(request, 'base.html')
+
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -122,6 +124,10 @@ def signup(request):
         form = UserCreationForm()
     
     return render(request, 'auth/signup.html', {'form': form})
+
+def logout_user(request):
+    logout(request)
+    return redirect('/')
 
 
 def add_workers(request):

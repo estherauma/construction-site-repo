@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_materials, details, edit_material, material_usage, signup
+from .views import index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_materials, details, edit_material, material_usage, signup,logout_user
 from .views import WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, RegisterWorkerAPIView, MaterialAllView, MaterialDetailview
 from django.contrib.auth.views import LoginView
 router = DefaultRouter() 
@@ -30,6 +30,7 @@ urlpatterns = [
     path("update_attendance/<int:pk>/", update_attendance, name="update_attendance"),
     path('login/', LoginView.as_view(template_name ='auth/login.html'), name = 'login'),
     path('signup/', signup, name='signup'),
+    path('logout/', logout_user, name = 'logout'),
 
     # API URLS
     path("api/workers/", WorkerListAPIView.as_view(), name="workers"),
