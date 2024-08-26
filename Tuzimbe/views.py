@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import WorkerForm,AttendanceForm,MaterialsForm,UsageForm
 from django.core.exceptions import ValidationError
 from .models import Material, MaterialUsage,Worker,Attendance
-from .serializers import MaterialSerializer
+from .serializers import MaterialSerializer,UserSerializer
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework import status
@@ -14,13 +14,29 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.forms import UserCreationForm
 from .forms import UserCreationForm
-from django.contrib import messages
+from rest_framework.authtoken.models import Token
+
 
 
 
 # Create your views here.
 
 # API Views
+
+class UserRegistrationAPIView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'username': user.username,
+                'email': user.email,
+                'token': token.key
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class WorkerListAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -31,6 +47,7 @@ class WorkerListAPIView(APIView):
     
 
 class WorkerDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self,request, pk):
         try:
             worker = Worker.objects.get(pk=pk)
@@ -41,6 +58,7 @@ class WorkerDetailAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class WorkerCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = WorkerSerializer(data=request.data)
         if serializer.is_valid():
@@ -49,6 +67,7 @@ class WorkerCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class WorkerUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get_object(self, pk):
         try:
             return Worker.objects.get(pk=pk)
@@ -85,26 +104,6 @@ class WorkerUpdateAPIView(APIView):
         worker.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-class RegisterWorkerAPIView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        serializer = WorkerSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
-            refresh_token = str(refresh)
-
-            response_data = {
-                "first_name": user.first_name,
-                "access_token": access_token,
-                "refresh_token": refresh_token
-            }
-            return Response(response_data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #Template Views
 def index(request):
@@ -247,11 +246,13 @@ def material_usage(request):
 
 
 class MaterialDetailView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
     lookup_field = 'id'
 
 class MaterialAllView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         materials = Material.objects.all()
         serializer = MaterialSerializer(materials, many=True)
@@ -284,6 +285,7 @@ class MaterialAllView(APIView):
 
 
 class MaterialDetailview(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, id,):
         material = get_object_or_404(Material, id=id)
         serializer = MaterialSerializer(material)
