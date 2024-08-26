@@ -9,12 +9,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from .serializers import WorkerSerializer
 from rest_framework.permissions import AllowAny
-from django.contrib.auth.forms import UserCreationForm
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.forms import UserCreationForm
 from .forms import UserCreationForm
+from django.contrib import messages
 
 
 
@@ -112,6 +112,7 @@ def index(request):
 
 def base(request):
     return render(request, 'base.html')
+
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -124,15 +125,10 @@ def signup(request):
     
     return render(request, 'auth/signup.html', {'form': form})
 
-def authView(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('Tuzimbe:all_workers')
-    else:
-        form = UserCreationForm()
-    return render(request, 'registration/signup.html', {'form': form})
+def logout_user(request):
+    logout(request)
+    return redirect('/')
+
 
 def add_workers(request):
     if request.method == 'POST':

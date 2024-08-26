@@ -1,14 +1,25 @@
-
-
 body {
     font-family: Arial, sans-serif;
     background-color: #f8f9fa;
     margin: 0;
     padding: 0;
+}
+
+h3 {
+    text-align: center;
+    margin-top: 20px; 
+    font-size: 24px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: calc(80vh - 80px); 
 }
 
 form {
@@ -25,7 +36,7 @@ form {
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     width: 100%; 
 }
 
@@ -61,7 +72,12 @@ button.btn-primary:hover {
     background-color: #0056b3;
 }
 
-h3 {
+.login{
     text-align: center;
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    margin-top: 30px;
+    font-size: 20px;
+}
+.error {
+    color: red;
+    margin-top: 10px;
 }
