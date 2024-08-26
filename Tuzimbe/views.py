@@ -21,19 +21,6 @@ from .forms import UserCreationForm
 # Create your views here.
 
 # API Views
-def signup(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)  # Automatically log in the user after successful signup
-            return redirect('Tuzimbe:login')  # Redirect to a home page or another appropriate page
-    else:
-        form = UserCreationForm()
-    
-    return render(request, 'auth/signup.html', {'form': form})
-
-
 
 class WorkerListAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -125,6 +112,17 @@ def index(request):
 
 def base(request):
     return render(request, 'base.html')
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user) 
+            return redirect('Tuzimbe:login')
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'auth/signup.html', {'form': form})
 
 def authView(request):
     if request.method == 'POST':
