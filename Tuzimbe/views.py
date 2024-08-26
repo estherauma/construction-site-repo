@@ -1,3 +1,4 @@
+from datetime import date, timedelta, timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import WorkerForm,AttendanceForm,MaterialsForm,UsageForm
 from django.core.exceptions import ValidationError
@@ -9,7 +10,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from .serializers import WorkerSerializer
 from rest_framework.permissions import AllowAny
-
+from dateutil.relativedelta import relativedelta 
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
@@ -180,7 +181,7 @@ def add_material(request):
     return render(request, 'materials/add_materials.html', {'form': form, 'error_message': error_message})
 
 
-def all_materials(request):
+def all_material(request):
     material = Material.objects.all()
     return render(request, 'materials/all_materials.html', {'materials': material})
 
@@ -222,8 +223,37 @@ def material_usage(request):
         form = UsageForm()
     return render(request, 'materials/material_use.html', {'form': form})
 
+def material_usage_period(request, id):
+    material = get_object_or_404(Material, id=id)
+    date_param = request.GET.get('date')
+    period = request.GET.get('period', 'daily')
 
-class MaterialDetailView(RetrieveAPIView):
+    if date_param:
+        selected_date = date.fromisoformat(date_param)
+    else:
+        selected_date = timezone.now().date()
+    
+    if period == 'weekly':
+        start_date =selected_date - timedelta(days=selected_date.weekday())
+        end_date = start_date + timedelta(days=6)
+        usage_data = material.get_total_used_quantity__for_period(start_date, end_date)
+    elif period == 'monthly':
+        start_date = date(selected_date.year, selected_date.month, 1)
+        end_date = (start_date + relativedelta(months=1)) - timedelta(days=1)
+        usage_data = material.get_total_used_quantity__for_period(start_date, end_date)
+    else:
+        usage_data = material.get_daily_usage(selected_date)
+    
+    context = {
+        'material': material,
+        'usage': usage_data,
+        'date': selected_date,
+        'period': period
+    }
+    return render(request, 'materials/material_usage_tracker.html', context)
+
+
+class MaterialDetail(RetrieveAPIView):
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
     lookup_field = 'id'
@@ -260,7 +290,7 @@ class MaterialAllView(APIView):
        
 
 
-class MaterialDetailview(APIView):
+class MaterialDetailView(APIView):
     def get(self, request, id,):
         material = get_object_or_404(Material, id=id)
         serializer = MaterialSerializer(material)
@@ -300,3 +330,4 @@ class MaterialDetailview(APIView):
             return Response({"message": "Material deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
         except Material.DoesNotExist:
             return Response({"error": "Material not found."}, status=status.HTTP_404_NOT_FOUND)
+        

@@ -1,0 +1,31 @@
+{% extends "../base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class='card'>
+        <h1>{{material.name }}</h1>
+
+        <form method="get">
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date" value="{{ selected_date }}" />
+
+            <label for="period">Select Period:</label>
+            <select id="period" name="period">
+                <option value="daily" {% if period == 'daily' %}selected{% endif %}>Daily</option>
+                <option value="weekly" {% if period == 'weekly' %}selected{% endif %}>Weekly</option>
+                <option value="monthly" {% if period == 'monthly' %}selected{% endif %}>Monthly</option>
+            </select>
+
+            <button type="submit">Check Usage</button>
+        </form>
+        {% if usage_data %}
+        <h2>Usage Data for {{ period|title }} period starting from {{ selected_date }}</h2>
+        <p>Total Quantity Used: {{ usage_data.total_quantity }}</p>
+        <p>Total Cost: {{usage_data.total_cost}}</p>
+        {% else %}
+        <p>No usage data available for the selected period</p>
+        {% endif %}
+
+        <a href="{% url 'Tuzimbe:details'  material.id%}"> Back</a>
+    </div>
+</div>
+{% endblock %}

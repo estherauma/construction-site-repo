@@ -51,6 +51,11 @@
                   <li><a class="dropdown-item" href="{% url 'Tuzimbe:addmaterials' %}">Add Materials</a></li>
                   <li><a class="dropdown-item" href="{% url 'Tuzimbe:materials' %}">All Materials</a></li>
                   <li><a class="dropdown-item" href="{% url 'Tuzimbe:material_usage' %}">Use Materials</a></li>
+                  {% if material %}
+                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:material_usage_period' id=material.id %}">Usage</a></li>
+                  {% else %}
+                      <li><a class="dropdown-item" href="#">Usage (No Material)</a></li>
+                  {% endif %}
                 </ul>
               </li>
             </ul>
