@@ -2,59 +2,63 @@
 {% block content %}
 <h3>ADD ATTENDANCE</h3>
 
-<form method="POST" action="" class="add-material-form">
-    {% csrf_token %}
-    {% if request.method == 'POST' and form.errors %}
-        <div class="alert alert-danger">
-            <ul>
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <li>{{ error }}</li>
+<div class="container">
+    <form method="POST" action="" class="add-material-form">
+        {% csrf_token %}
+        {% if request.method == 'POST' and form.errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
                     {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label for="{{ form.worker.id_for_label }}">Name</label>
+            <select name="{{ form.worker.name }}" id="{{ form.worker.id_for_label }}" class="form-select" aria-label="Select worker" required="True">
+                <option value="" selected>Select a worker</option>
+                {% for worker in form.worker.field.queryset %}
+                    <option value="{{ worker.id }}" {% if worker.id == form.worker.value %}selected{% endif %}>
+                        {{ worker }}
+                    </option>
                 {% endfor %}
-            </ul>
+            </select>
         </div>
-    {% endif %}
     
-    <div class="form-group">
-        <label for="{{ form.worker.id_for_label }}">Name</label>
-        <select name="{{ form.worker.name }}" id="{{ form.worker.id_for_label }}" class="form-select" aria-label="Select worker" required="True">
-            <option value="" selected>Select a worker</option>
-            {% for worker in form.worker.field.queryset %}
-                <option value="{{ worker.id }}" {% if worker.id == form.worker.value %}selected{% endif %}>
-                    {{ worker }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="{{ form.date.id_for_label }}">Date</label>
-        <input type="date" name="{{ form.date.name }}" id="{{ form.date.id_for_label }}"
-               value="{{ form.date.value|default_if_none:'' }}" class="form-control" required>
-    </div>
-
-    <div class="form-group">
-        <label for="{{ form.time_in.id_for_label }}">Time In</label>
-        <input type="time" name="{{ form.time_in.name }}" id="{{ form.time_in.id_for_label }}"
-               value="{{ form.time_in.value|default_if_none:'' }}" class="form-control" required>
-    </div>
-
-    <div class="form-group">
-        <label for="{{ form.time_out.id_for_label }}">Time Out</label>
-        <input type="time" name="{{ form.time_out.name }}" id="{{ form.time_out.id_for_label }}"
-               value="{{ form.time_out.value|default_if_none:'' }}" class="form-control" required>
-    </div>
-
-    <div class="form-group">
-        <label for="{{ form.daily_rate.id_for_label }}">Daily Rate</label>
-        <input type="number" name="{{ form.daily_rate.name }}" id="{{ form.daily_rate.id_for_label }}"
-               value="{{ form.daily_rate.value|default_if_none:'' }}" class="form-control" step="0.01" required>
-    </div>
+        <div class="form-group">
+            <label for="{{ form.date.id_for_label }}">Date</label>
+            <input type="date" name="{{ form.date.name }}" id="{{ form.date.id_for_label }}"
+                   value="{{ form.date.value|default_if_none:'' }}" class="form-control" required>
+        </div>
     
-    <br>
+        <div class="form-group">
+            <label for="{{ form.time_in.id_for_label }}">Time In</label>
+            <input type="time" name="{{ form.time_in.name }}" id="{{ form.time_in.id_for_label }}"
+                   value="{{ form.time_in.value|default_if_none:'' }}" class="form-control" required>
+        </div>
     
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+        <div class="form-group">
+            <label for="{{ form.time_out.id_for_label }}">Time Out</label>
+            <input type="time" name="{{ form.time_out.name }}" id="{{ form.time_out.id_for_label }}"
+                   value="{{ form.time_out.value|default_if_none:'' }}" class="form-control" required>
+        </div>
+    
+        <div class="form-group">
+            <label for="{{ form.daily_rate.id_for_label }}">Daily Rate</label>
+            <input type="number" name="{{ form.daily_rate.name }}" id="{{ form.daily_rate.id_for_label }}"
+                   value="{{ form.daily_rate.value|default_if_none:'' }}" class="form-control" step="0.01" required>
+        </div>
+        
+        <br>
+        
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    
+</div>
+
 
 {% endblock %}
