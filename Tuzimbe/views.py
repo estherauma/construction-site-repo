@@ -12,6 +12,10 @@ from .serializers import WorkerSerializer
 from rest_framework.permissions import AllowAny
 from dateutil.relativedelta import relativedelta 
 from rest_framework_simplejwt.tokens import RefreshToken
+from .filters import MaterialUsageFilter
+from django.utils.dateparse import parse_date
+# from django_filters.views import FilterView
+
 
 # Create your views here.
 
@@ -223,35 +227,23 @@ def material_usage(request):
         form = UsageForm()
     return render(request, 'materials/material_use.html', {'form': form})
 
-def material_usage_period(request, id):
-    material = get_object_or_404(Material, id=id)
-    date_param = request.GET.get('date')
-    period = request.GET.get('period', 'daily')
+def all_used_materials(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
-    if date_param:
-        selected_date = date.fromisoformat(date_param)
+    if start_date and end_date:
+        start_date = parse_date(start_date)
+        end_date = parse_date(end_date)
+        used_materials = MaterialUsage.objects.filter(date__range=(start_date, end_date))
     else:
-        selected_date = timezone.now().date()
+        used_materials = MaterialUsage.objects.all()
     
-    if period == 'weekly':
-        start_date =selected_date - timedelta(days=selected_date.weekday())
-        end_date = start_date + timedelta(days=6)
-        usage_data = material.get_total_used_quantity__for_period(start_date, end_date)
-    elif period == 'monthly':
-        start_date = date(selected_date.year, selected_date.month, 1)
-        end_date = (start_date + relativedelta(months=1)) - timedelta(days=1)
-        usage_data = material.get_total_used_quantity__for_period(start_date, end_date)
-    else:
-        usage_data = material.get_daily_usage(selected_date)
-    
-    context = {
-        'material': material,
-        'usage': usage_data,
-        'date': selected_date,
-        'period': period
-    }
-    return render(request, 'materials/material_usage_tracker.html', context)
-
+    return render(request, 'materials/all_used_materials.html', {'used_materials': used_materials})
+# class MaterialUsageListView(FilterView):
+#     model = MaterialUsage
+#     template_name = 'materials/all_used_materials.html'
+#     filterset_class = MaterialUsageFilter
+#     context_object_name = 'used_materials'
 
 class MaterialDetail(RetrieveAPIView):
     queryset = Material.objects.all()

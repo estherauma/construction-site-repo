@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     "Tuzimbe",
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +146,5 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
+
+CRISPY_TEMPLATE_PACK = 'bootstrap5' 

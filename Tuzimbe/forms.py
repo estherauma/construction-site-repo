@@ -1,6 +1,7 @@
 from django import forms
 from .models import  Worker, Attendance,Material,MaterialUsage
 from django.forms import ModelForm
+from django_filters import rest_framework as filters
 
 
 
@@ -31,3 +32,5 @@ class AttendanceForm(forms.ModelForm):
         super(AttendanceForm, self).__init__(*args, **kwargs)
         
         self.fields['worker'].queryset = Worker.objects.all()
+
+  

@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import index, base, add_workers,all_workers, material_usage_period,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_material, details, edit_material, material_usage
+from .views import  all_used_materials, index, base, add_workers,all_workers, update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_material, details, edit_material, material_usage
 from .views import WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, RegisterWorkerAPIView, MaterialAllView, MaterialDetailView
 router = DefaultRouter() 
 app_name = "Tuzimbe"
@@ -14,7 +14,8 @@ urlpatterns = [
     path('material/<int:id>/details/', details, name="details"),
     path('material/<int:id>/edit/', edit_material, name="edit"),
     path('material/usage/', material_usage, name="material_usage"),
-    path("material/<int:id>/usage/", material_usage_period, name="material_usage_period"),
+    path('used_materials/', all_used_materials, name="all_used_materials"),
+#    path('used_materials/', MaterialUsageListView.as_view(), name='all_used_materials'),
 
 
     path('api/', include(router.urls)),
