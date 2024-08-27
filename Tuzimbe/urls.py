@@ -1,7 +1,10 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import  all_used_materials, index, base, add_workers,all_workers, update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_material, details, edit_material, material_usage
-from .views import WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, RegisterWorkerAPIView, MaterialAllView, MaterialDetailView
+
+from .views import all_used_materials,index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_material, details, edit_material, material_usage, signup,logout_user
+from .views import WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, MaterialAllView, MaterialDetailview, UserRegistrationAPIView
+from django.contrib.auth.views import LoginView
+
 router = DefaultRouter() 
 app_name = "Tuzimbe"
 
@@ -30,11 +33,14 @@ urlpatterns = [
     path("worker_attendance_form/", worker_attendance, name="worker_attendance_form"),
     path("attendance_list/", attendance_list, name="attendance_list"),
     path("update_attendance/<int:pk>/", update_attendance, name="update_attendance"),
+    path('login/', LoginView.as_view(template_name ='auth/login.html'), name = 'login'),
+    path('signup/', signup, name='signup'),
+    path('logout/', logout_user, name = 'logout'),
 
     # API URLS
     path("api/workers/", WorkerListAPIView.as_view(), name="workers"),
     path("api/workers/<int:pk>/", WorkerDetailAPIView.as_view(), name="workers"),
     path("api/workers/<int:pk>/update/",WorkerUpdateAPIView.as_view(), name="worker_update"),
     path("api/workers/create/", WorkerCreateAPIView.as_view(), name="worker_create"),
-    path('api/register/', RegisterWorkerAPIView.as_view(), name='user_register'),
+    path('api/register/',  UserRegistrationAPIView.as_view(), name='user_register'),
 ]

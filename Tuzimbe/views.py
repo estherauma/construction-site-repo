@@ -3,26 +3,43 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import WorkerForm,AttendanceForm,MaterialsForm,UsageForm
 from django.core.exceptions import ValidationError
 from .models import Material, MaterialUsage,Worker,Attendance
-from .serializers import MaterialSerializer
+from .serializers import MaterialSerializer,UserSerializer
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from .serializers import WorkerSerializer
 from rest_framework.permissions import AllowAny
-from dateutil.relativedelta import relativedelta 
-from rest_framework_simplejwt.tokens import RefreshToken
-from .filters import MaterialUsageFilter
 from django.utils.dateparse import parse_date
-# from django_filters.views import FilterView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import login,logout
+from django.contrib.auth.forms import UserCreationForm
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
 
 # API Views
 
+class UserRegistrationAPIView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'username': user.username,
+                'email': user.email,
+                'token': token.key
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class WorkerListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         workers = Worker.objects.all()
         serializer = WorkerSerializer(workers, many=True)
@@ -30,6 +47,7 @@ class WorkerListAPIView(APIView):
     
 
 class WorkerDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self,request, pk):
         try:
             worker = Worker.objects.get(pk=pk)
@@ -40,6 +58,7 @@ class WorkerDetailAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class WorkerCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = WorkerSerializer(data=request.data)
         if serializer.is_valid():
@@ -48,6 +67,7 @@ class WorkerCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class WorkerUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get_object(self, pk):
         try:
             return Worker.objects.get(pk=pk)
@@ -85,26 +105,6 @@ class WorkerUpdateAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RegisterWorkerAPIView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        serializer = WorkerSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
-            refresh_token = str(refresh)
-
-            response_data = {
-                "first_name": user.first_name,
-                "access_token": access_token,
-                "refresh_token": refresh_token
-            }
-            return Response(response_data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 #Template Views
 def index(request):
     return render(request, 'index.html')
@@ -112,6 +112,23 @@ def index(request):
 def base(request):
     return render(request, 'base.html')
 
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user) 
+            return redirect('Tuzimbe:login')
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'auth/signup.html', {'form': form})
+
+def logout_user(request):
+    logout(request)
+    return redirect('/')
+
+@login_required
 def add_workers(request):
     if request.method == 'POST':
         form = WorkerForm(request.POST)
@@ -122,10 +139,12 @@ def add_workers(request):
         form = WorkerForm()
     return render(request, 'workers/add_workers.html', {'form': form})
 
+@login_required
 def all_workers(request):
     workers = Worker.objects.all()
     return render(request, 'workers/all_workers.html', {'workers': workers})
 
+@login_required
 def update_workers(request, pk):
     worker = Worker.objects.get(id=pk)
     form = WorkerForm(instance=worker)
@@ -136,15 +155,18 @@ def update_workers(request, pk):
             return redirect('Tuzimbe:all_workers')
     return render(request, 'workers/update_workers.html', {'form': form})
 
+@login_required
 def worker_details(request, pk):
     worker = Worker.objects.get(id=pk)
     return render(request, 'workers/worker_details.html', {'worker': worker})
 
+@login_required
 def delete_workers(request, pk):
     worker = Worker.objects.get(id=pk)
     worker.delete()
     return redirect('Tuzimbe:all_workers')
 
+@login_required
 def worker_attendance(request):
     form = AttendanceForm(request.POST)
     if request.method == 'POST':
@@ -154,10 +176,12 @@ def worker_attendance(request):
             return redirect('Tuzimbe:attendance_list')
     return render(request, 'workers/workers_attendance.html', {'form': form})
 
+@login_required
 def attendance_list(request):
     attendance = Attendance.objects.all()
     return render(request, 'workers/attendance_list.html', {'attendances': attendance})
 
+@login_required
 def update_attendance(request, pk):
     attendance = Attendance.objects.get(id=pk)
     form = AttendanceForm(instance=attendance)
@@ -168,6 +192,7 @@ def update_attendance(request, pk):
             return redirect('Tuzimbe:attendance_list')
     return render(request, 'workers/update_attendance.html', {'form': form})
 
+@login_required
 def add_material(request):
     error_message = None
     if request.method == 'POST':
@@ -185,16 +210,19 @@ def add_material(request):
     return render(request, 'materials/add_materials.html', {'form': form, 'error_message': error_message})
 
 
+
+@login_required
 def all_material(request):
     material = Material.objects.all()
     return render(request, 'materials/all_materials.html', {'materials': material})
 
+@login_required
 def details(request, id):
     material = get_object_or_404(Material, id=id)
     usage = MaterialUsage.objects.filter(material=material)
     return render(request, 'materials/details.html', {'material': material, 'usage': usage})
 
-
+@login_required
 def edit_material(request, id):
     material = get_object_or_404(Material, id=id)
     error_message = None
@@ -213,7 +241,7 @@ def edit_material(request, id):
         form = MaterialsForm(instance=material)
     return render(request, 'materials/edit_material.html', {'form': form, 'material': material, 'error_message': error_message})
 
-
+@login_required
 def material_usage(request):
     if request.method == 'POST':
         form  = UsageForm(request.POST)
@@ -231,6 +259,7 @@ def all_used_materials(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
+
     if start_date and end_date:
         start_date = parse_date(start_date)
         end_date = parse_date(end_date)
@@ -239,11 +268,7 @@ def all_used_materials(request):
         used_materials = MaterialUsage.objects.all()
     
     return render(request, 'materials/all_used_materials.html', {'used_materials': used_materials})
-# class MaterialUsageListView(FilterView):
-#     model = MaterialUsage
-#     template_name = 'materials/all_used_materials.html'
-#     filterset_class = MaterialUsageFilter
-#     context_object_name = 'used_materials'
+
 
 class MaterialDetail(RetrieveAPIView):
     queryset = Material.objects.all()
@@ -251,6 +276,7 @@ class MaterialDetail(RetrieveAPIView):
     lookup_field = 'id'
 
 class MaterialAllView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         materials = Material.objects.all()
         serializer = MaterialSerializer(materials, many=True)
@@ -282,7 +308,9 @@ class MaterialAllView(APIView):
        
 
 
-class MaterialDetailView(APIView):
+
+class MaterialDetailview(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, id,):
         material = get_object_or_404(Material, id=id)
         serializer = MaterialSerializer(material)
