@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     "Tuzimbe",
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -138,4 +141,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = 'Tuzimbe:base'
 LOGIN_URL = '/login/'
 
-
+CRISPY_TEMPLATE_PACK = 'bootstrap5' 

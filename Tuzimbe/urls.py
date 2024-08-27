@@ -1,8 +1,10 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_materials, details, edit_material, material_usage, signup,logout_user
+
+from .views import all_used_materials,index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_material, details, edit_material, material_usage, signup,logout_user
 from .views import WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, MaterialAllView, MaterialDetailview, UserRegistrationAPIView
 from django.contrib.auth.views import LoginView
+
 router = DefaultRouter() 
 app_name = "Tuzimbe"
 
@@ -11,15 +13,18 @@ urlpatterns = [
     path("", index, name="index"),
     path("base", base, name="base"),
     path("addmaterials/", add_material, name="addmaterials"),
-    path("materials/", all_materials, name="materials"),
+    path("materials/", all_material, name="materials"),
     path('material/<int:id>/details/', details, name="details"),
     path('material/<int:id>/edit/', edit_material, name="edit"),
     path('material/usage/', material_usage, name="material_usage"),
+    path('used_materials/', all_used_materials, name="all_used_materials"),
+#    path('used_materials/', MaterialUsageListView.as_view(), name='all_used_materials'),
 
 
     path('api/', include(router.urls)),
     path('api/materials/', MaterialAllView.as_view(), name='material_create'),
-    path('api/materials/detail/<int:id>/', MaterialDetailview.as_view(), name='material_detail'),
+    path('api/materials/detail/<int:id>/', MaterialDetailView.as_view(), name='material_detail'),
+
     path("add_workers/", add_workers, name="add_workers"),
     path("all_workers/", all_workers, name="all_workers"),
     path("update_workers/<int:pk>/", update_workers, name="update_workers"),

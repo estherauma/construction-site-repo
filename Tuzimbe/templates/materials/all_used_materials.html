@@ -1,0 +1,77 @@
+{% extends '../base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<button id="toggle-filter" class="btn btn-primary">Filter</button>
+
+<div id="filter-form">
+    <form method="GET" action="{% url 'Tuzimbe:all_used_materials' %}">
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ request.GET.start_date }}">
+        
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ request.GET.end_date }}">
+
+        <button type="submit" class="btn btn-secondary">Apply Filter</button>
+    </form>
+</div>
+
+<table id="all_materials" class="display">
+    <h1 id="heading">All Used Materials</h1>
+    <thead>
+        <tr>
+            <th>Material Name</th>
+            <th>Total Quantity</th>
+            <th>Units</th>
+            <th>Price Per Unit</th>
+            <th>Total Price</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for material_usage in used_materials %}
+            <tr>
+                <td>{{ material_usage.material.name }}</td>
+                <td>{{ material_usage.quantity }}</td>
+                <td>{{ material_usage.material.get_unit_display }}</td>
+                <td>{{ material_usage.material.price_per_unit }}</td>
+                <td>{{ material_usage.total_price }}</td>
+                <td>{{ material_usage.date }}</td>
+                <td>
+                    <a href="{% url 'Tuzimbe:details' material_usage.material.id %}" class="btn btn-outline-primary btn-sm details-btn">
+                        Details
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/2.1.3/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/autofill/2.7.0/js/dataTables.autoFill.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.1.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.1.1/js/buttons.colVis.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.1.1/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.1.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#all_materials').DataTable({
+            "paging": true,        
+            "searching": true,     
+            "ordering": true,      
+            "pageLength": 10       
+        });
+    });
+    document.getElementById('toggle-filter').addEventListener('click', function() {
+        var filterForm = document.getElementById('filter-form');
+        if (filterForm.style.display === 'none' || filterForm.style.display === '') {
+            filterForm.style.display = 'block';
+        } else {
+            filterForm.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

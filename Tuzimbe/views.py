@@ -1,3 +1,4 @@
+from datetime import date, timedelta, timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import WorkerForm,AttendanceForm,MaterialsForm,UsageForm
 from django.core.exceptions import ValidationError
@@ -9,14 +10,13 @@ from rest_framework import status
 from rest_framework.response import Response
 from .serializers import WorkerSerializer
 from rest_framework.permissions import AllowAny
+from django.utils.dateparse import parse_date
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login,logout
 from django.contrib.auth.forms import UserCreationForm
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.decorators import login_required
-
-
 
 
 # Create your views here.
@@ -210,8 +210,9 @@ def add_material(request):
     return render(request, 'materials/add_materials.html', {'form': form, 'error_message': error_message})
 
 
+
 @login_required
-def all_materials(request):
+def all_material(request):
     material = Material.objects.all()
     return render(request, 'materials/all_materials.html', {'materials': material})
 
@@ -254,9 +255,22 @@ def material_usage(request):
         form = UsageForm()
     return render(request, 'materials/material_use.html', {'form': form})
 
+def all_used_materials(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
-class MaterialDetailView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated]
+
+    if start_date and end_date:
+        start_date = parse_date(start_date)
+        end_date = parse_date(end_date)
+        used_materials = MaterialUsage.objects.filter(date__range=(start_date, end_date))
+    else:
+        used_materials = MaterialUsage.objects.all()
+    
+    return render(request, 'materials/all_used_materials.html', {'used_materials': used_materials})
+
+
+class MaterialDetail(RetrieveAPIView):
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
     lookup_field = 'id'
@@ -292,6 +306,7 @@ class MaterialAllView(APIView):
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
        
+
 
 
 class MaterialDetailview(APIView):
@@ -335,3 +350,4 @@ class MaterialDetailview(APIView):
             return Response({"message": "Material deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
         except Material.DoesNotExist:
             return Response({"error": "Material not found."}, status=status.HTTP_404_NOT_FOUND)
+        

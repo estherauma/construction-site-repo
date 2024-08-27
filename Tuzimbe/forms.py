@@ -1,7 +1,9 @@
 from django import forms
 from .models import  Worker, Attendance,Material,MaterialUsage
+from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+
 
 class SignupForm(UserCreationForm):
     class Meta:
@@ -36,3 +38,5 @@ class AttendanceForm(forms.ModelForm):
         super(AttendanceForm, self).__init__(*args, **kwargs)
         
         self.fields['worker'].queryset = Worker.objects.all()
+
+  

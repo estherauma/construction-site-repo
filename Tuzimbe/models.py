@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta 
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
@@ -59,7 +61,33 @@ class Material(models.Model):
     def _str__(self):
         return f"{self.name} ({str(self.total_quantity_stocked)} {self.get_unit_display()} stocked)"
 
-
+    def get_total_used_quantity__for_period(self, start_date, end_date):
+        usage_data = self.usage.filter(date__range=[start_date, end_date]).aggregate(
+            total_quantity=Sum('quantity'), total_cost=Sum('total_price')
+        )
+        return usage_data
+    
+    def get_daily_usage(self, date=None):
+        if not date:
+            date = timezone.now().date()
+        return self.get_total_used_quantity__for_period(date, date)
+    
+    def get_weekly_usage(self, date=None):
+        if not date:
+            date = timezone.now().date()
+        start_date = date - timedelta(days=date.weekday())
+        end_date = date + timedelta(days=6)
+        return self.get_total_used_quantity__for_period(start_date, end_date)
+    
+    def get_monthly_usage(self, year=None, month=None):
+        if not year or not month:
+            today = timezone.now().date()
+            year = today.year
+            month = today.month
+        start_date = date(year, month, 1)
+        end_date = (start_date + relativedelta(months=1)) - timedelta(days=1)
+        return self.get_total_used_quantity__for_period(start_date, end_date)
+    
 
 class MaterialUsage(models.Model):
     material = models.ForeignKey(Material, on_delete=models.CASCADE, related_name="usage")
@@ -79,6 +107,7 @@ class MaterialUsage(models.Model):
     def __str__(self):
         return f"{self.material.name} on {self.date}: {self.quantity} {self.material.get_unit_display()} were used"
     
+
 class Worker(models.Model):
     first_name = models.CharField(max_length=50, null=False, blank=False)
     last_name = models.CharField(max_length=50, null=False, blank=False)
