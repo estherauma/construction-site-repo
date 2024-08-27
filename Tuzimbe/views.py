@@ -11,10 +11,10 @@ from .serializers import WorkerSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth import login,logout
 from django.contrib.auth.forms import UserCreationForm
-from .forms import UserCreationForm
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -128,7 +128,7 @@ def logout_user(request):
     logout(request)
     return redirect('/')
 
-
+@login_required
 def add_workers(request):
     if request.method == 'POST':
         form = WorkerForm(request.POST)
@@ -139,10 +139,12 @@ def add_workers(request):
         form = WorkerForm()
     return render(request, 'workers/add_workers.html', {'form': form})
 
+@login_required
 def all_workers(request):
     workers = Worker.objects.all()
     return render(request, 'workers/all_workers.html', {'workers': workers})
 
+@login_required
 def update_workers(request, pk):
     worker = Worker.objects.get(id=pk)
     form = WorkerForm(instance=worker)
@@ -153,15 +155,18 @@ def update_workers(request, pk):
             return redirect('Tuzimbe:all_workers')
     return render(request, 'workers/update_workers.html', {'form': form})
 
+@login_required
 def worker_details(request, pk):
     worker = Worker.objects.get(id=pk)
     return render(request, 'workers/worker_details.html', {'worker': worker})
 
+@login_required
 def delete_workers(request, pk):
     worker = Worker.objects.get(id=pk)
     worker.delete()
     return redirect('Tuzimbe:all_workers')
 
+@login_required
 def worker_attendance(request):
     form = AttendanceForm(request.POST)
     if request.method == 'POST':
@@ -171,10 +176,12 @@ def worker_attendance(request):
             return redirect('Tuzimbe:attendance_list')
     return render(request, 'workers/workers_attendance.html', {'form': form})
 
+@login_required
 def attendance_list(request):
     attendance = Attendance.objects.all()
     return render(request, 'workers/attendance_list.html', {'attendances': attendance})
 
+@login_required
 def update_attendance(request, pk):
     attendance = Attendance.objects.get(id=pk)
     form = AttendanceForm(instance=attendance)
@@ -185,6 +192,7 @@ def update_attendance(request, pk):
             return redirect('Tuzimbe:attendance_list')
     return render(request, 'workers/update_attendance.html', {'form': form})
 
+@login_required
 def add_material(request):
     error_message = None
     if request.method == 'POST':
@@ -202,16 +210,18 @@ def add_material(request):
     return render(request, 'materials/add_materials.html', {'form': form, 'error_message': error_message})
 
 
+@login_required
 def all_materials(request):
     material = Material.objects.all()
     return render(request, 'materials/all_materials.html', {'materials': material})
 
+@login_required
 def details(request, id):
     material = get_object_or_404(Material, id=id)
     usage = MaterialUsage.objects.filter(material=material)
     return render(request, 'materials/details.html', {'material': material, 'usage': usage})
 
-
+@login_required
 def edit_material(request, id):
     material = get_object_or_404(Material, id=id)
     error_message = None
@@ -230,7 +240,7 @@ def edit_material(request, id):
         form = MaterialsForm(instance=material)
     return render(request, 'materials/edit_material.html', {'form': form, 'material': material, 'error_message': error_message})
 
-
+@login_required
 def material_usage(request):
     if request.method == 'POST':
         form  = UsageForm(request.POST)
