@@ -73,11 +73,27 @@
     box-sizing: border-box;
 }
 
-#filter-form button {
+.button-group {
+    display: flex;
+    justify-content: space-between;
     margin-top: 10px;
-    padding: 10px;
-    width: 100%;
-    border-radius: 5px;
-    cursor: pointer;
+    max-width: 500px;
 }
 
+.button-group button {
+    padding: 10px 20px;
+    width: 80px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    /* height: 20px; */
+    white-space: nowrap;
+    text-align: center;
+
+}
+
+#error-message {
+    color: red; 
+    margin-top: 10px; 
+    display: none;
+}
