@@ -25,7 +25,7 @@ from django.contrib.auth.decorators import login_required
 
 
 class LoginAPIView(APIView):
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
