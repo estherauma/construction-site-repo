@@ -3,12 +3,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import WorkerForm,AttendanceForm,MaterialsForm,UsageForm
 from django.core.exceptions import ValidationError
 from .models import Material, MaterialUsage,Worker,Attendance
-from .serializers import MaterialSerializer,UserSerializer
+from .serializers import MaterialSerializer
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from .serializers import WorkerSerializer
+from .serializers import WorkerSerializer, MaterialSerializer, LoginSerializer
 from rest_framework.permissions import AllowAny
 from django.utils.dateparse import parse_date
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -23,18 +23,18 @@ from django.contrib.auth.decorators import login_required
 
 # API Views
 
-class UserRegistrationAPIView(APIView):
-    permission_classes = [AllowAny]
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
+
+class LoginAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
+            user = serializer.validated_data['user']
             token, created = Token.objects.get_or_create(user=user)
             return Response({
                 'username': user.username,
-                'email': user.email,
+                'password': request.data['password'],
                 'token': token.key
-            }, status=status.HTTP_201_CREATED)
+            }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -1,9 +1,10 @@
 # from .models import Material
 from rest_framework import serializers
 from .models import Worker
-from rest_framework import serializers
 from .models import Material, Worker
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
 
 class  MaterialSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,19 +16,41 @@ class WorkerSerializer(serializers.ModelSerializer):
         model = Worker
         fields = "__all__"
    
-class UserSerializer(serializers.ModelSerializer):
+# class UserSerializer(serializers.ModelSerializer):
+#     password = serializers.CharField(write_only=True)
+
+#     class Meta:
+#         model = User
+#         fields = ('username', 'password', 'email')
+
+#     def create(self, validated_data):
+#         user = User.objects.create_user(
+#             username=validated_data['username'],
+#             password=validated_data['password'],
+#             email=validated_data['email']
+#         )
+#         return user
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
-    class Meta:
-        model = User
-        fields = ('username', 'password', 'email')
+    def validate(self, data):
+        username = data.get('username')
+        password = data.get('password')
 
-    def create(self, validated_data):
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            password=validated_data['password'],
-            email=validated_data['email']
-        )
-        return user
+        if username and password:
+            user = authenticate(username=username, password=password)
+            if user:
+                if user.is_active:
+                    data['user'] = user
+                else:
+                    raise serializers.ValidationError("User is deactivated.")
+            else:
+                raise serializers.ValidationError("Unable to log in with provided credentials.")
+        else:
+            raise serializers.ValidationError("Must include 'username' and 'password'.")
+
+        return data
 
 
