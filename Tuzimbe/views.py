@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import WorkerForm,AttendanceForm,MaterialsForm,UsageForm
 from django.core.exceptions import ValidationError
 from .models import Material, MaterialUsage,Worker,Attendance
-from .serializers import MaterialSerializer,UserRegistrationSerializer
+from .serializers import MaterialSerializer,UserRegistrationSerializer,UserListSerializer
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework import status
@@ -17,6 +17,7 @@ from django.contrib.auth import login,logout
 from django.contrib.auth.forms import UserCreationForm
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -48,7 +49,13 @@ class LoginAPIView(APIView):
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+class UserListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserListSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 class WorkerListAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
