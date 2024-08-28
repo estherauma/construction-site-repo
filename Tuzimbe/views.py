@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import WorkerForm,AttendanceForm,MaterialsForm,UsageForm
 from django.core.exceptions import ValidationError
 from .models import Material, MaterialUsage,Worker,Attendance
-from .serializers import MaterialSerializer
+from .serializers import MaterialSerializer,UserRegistrationSerializer
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework import status
@@ -22,6 +22,17 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 # API Views
+
+class UserRegistrationAPIView(APIView):
+    def post(self, request):
+        serializer = UserRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                'username': user.username,
+                'email': user.email
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginAPIView(APIView):
