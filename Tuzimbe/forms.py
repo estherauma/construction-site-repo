@@ -3,12 +3,30 @@ from .models import  Worker, Attendance,Material,MaterialUsage
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-
+import re
 
 class SignupForm(UserCreationForm):
+    
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2')
+        fields = ('username','password1', 'password2')
+
+    def clean_password1(self):
+        password = self.cleaned_data.get('password1')
+
+        min_length = 8
+        if len(password) < min_length:
+            raise forms.ValidationError(f"Password must be at least {min_length} characters long.")
+        if not re.search(r'[A-Z]', password):
+            raise forms.ValidationError("Password must contain at least one uppercase letter.")
+        if not re.search(r'[a-z]', password):
+            raise forms.ValidationError("Password must contain at least one lowercase letter.")
+        if not re.search(r'\d', password):
+            raise forms.ValidationError("Password must contain at least one digit.")
+        if not re.search(r'[@$!%*?&]', password):
+            raise forms.ValidationError("Password must contain at least one special character (@, $, !, %, *, ?, &).")
+
+        return password
 
 
 class MaterialsForm(forms.ModelForm):
