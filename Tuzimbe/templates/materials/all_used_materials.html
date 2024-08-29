@@ -69,6 +69,7 @@
             "pageLength": 10       
         });
     });
+
     document.getElementById('toggle-filter').addEventListener('click', function() {
         var filterForm = document.getElementById('filter-form');
         if (filterForm.style.display === 'none' || filterForm.style.display === '') {
@@ -77,9 +78,8 @@
             filterForm.style.display = 'none';
         }
     });
-    document.getElementById('date-filter-form').addEventListener('submit', function(event){
-        event.preventDefault();
 
+    document.getElementById('date-filter-form').addEventListener('submit', function(event){
         var startDate = document.getElementById('start_date').value;
         var endDate = document.getElementById('end_date').value;
         var errorMessage = document.getElementById('error-message');
@@ -88,18 +88,23 @@
 
         if (startDate && endDate){
             if (endDate < startDate){
-                errorMessage.textContent ="End Date cannot be earlier than Start Date.";
+                event.preventDefault();  
+                errorMessage.textContent = "End Date cannot be earlier than Start Date.";
                 errorMessage.style.display = "block";
             }
-        }else{
-            errorMessage.textContent ="Please select both Start Date and End Date.";
+        } else {
+            event.preventDefault();  
+            errorMessage.textContent = "Please select both Start Date and End Date.";
             errorMessage.style.display = "block";
         }
     });
+
     document.getElementById('clear').addEventListener("click", function(){
-        document.getElementById('start_date').value ='';
-        document.getElementById('end_date').value ='';
-        document.getElementById('errorMessage').style.display = 'none';
+        document.getElementById('start_date').value = '';
+        document.getElementById('end_date').value = '';
+        document.getElementById('error-message').style.display = 'none';  
+        document.getElementById('date-filter-form').submit();
     });
 </script>
+
 {% endblock %}
