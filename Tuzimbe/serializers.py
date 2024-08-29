@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Material, Worker,Attendance
+from .models import Material, Worker,Attendance,MaterialUsage
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 import re
@@ -8,6 +8,12 @@ class  MaterialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Material
         fields = ['id', 'name',  'total_quantity_stocked','unit', 'price_per_unit']
+
+class MaterialUsageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MaterialUsage
+        fields = ['id', 'material', 'date', 'quantity', 'total_price']
+        read_only_fields = ['total_price']
 
 class WorkerSerializer(serializers.ModelSerializer):
     class Meta:
