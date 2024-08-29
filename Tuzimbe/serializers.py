@@ -1,10 +1,7 @@
-# from .models import Material
 from rest_framework import serializers
-from .models import Worker
-from .models import Material, Worker
+from .models import Material, Worker,Attendance
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from rest_framework.authtoken.models import Token
 import re
 
 class  MaterialSerializer(serializers.ModelSerializer):
@@ -90,5 +87,13 @@ class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'date_joined')
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    date = serializers.DateField(format='%Y-%m-%d')
+    time_in = serializers.TimeField(format='%H:%M:%S')
+    time_out = serializers.TimeField(format='%H:%M:%S')
+    class Meta:
+        model = Attendance
+        fields = "__all__"
 
 

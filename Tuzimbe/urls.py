@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from .views import  all_used_materials,index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_material, details, edit_material, material_usage, signup,logout_user
-from .views import WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, MaterialAllView, MaterialDetail,LoginAPIView,UserRegistrationAPIView,UserListAPIView,MaterialDetailview
+from .views import WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, MaterialAllView, MaterialDetail,LoginAPIView,UserRegistrationAPIView,UserListAPIView,MaterialDetailview,AttendanceListAPIView,AttendanceCreateAPIView,AttendanceRetrieveUpdateAPIView
 
 from django.contrib.auth.views import LoginView
 
@@ -44,4 +44,7 @@ urlpatterns = [
     path('api/login/', LoginAPIView.as_view(), name='api-login'),
     path('api/register/', UserRegistrationAPIView.as_view(), name='user-registration'),
     path('api/users/', UserListAPIView.as_view(), name='user-list'),
+    path('api/attendance/', AttendanceListAPIView.as_view(), name='attendance-list'),
+    path('api/attendance/create/', AttendanceCreateAPIView.as_view(), name='attendance-create'),
+    path('api/attendance/<int:id>/', AttendanceRetrieveUpdateAPIView.as_view(), name='attendance-detail'),
 ]
