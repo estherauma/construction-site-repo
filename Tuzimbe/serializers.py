@@ -64,6 +64,11 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        unexpected_fields = set(self.initial_data.keys()) - set(self.fields.keys())
+        if unexpected_fields:
+            raise serializers.ValidationError(f"Unexpected fields: {', '.join(unexpected_fields)}")
+
+
         username = data.get('username')
         password = data.get('password')
 
