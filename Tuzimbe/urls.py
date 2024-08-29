@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import all_used_materials,index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_material, details, edit_material, material_usage, signup,logout_user
+from .views import MaterialDetailview, all_used_materials,index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_material, details, edit_material, material_usage, signup,logout_user
 from .views import WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, MaterialAllView, MaterialDetail,LoginAPIView,UserRegistrationAPIView,UserListAPIView
 from django.contrib.auth.views import LoginView
 
