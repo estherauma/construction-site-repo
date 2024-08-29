@@ -3,12 +3,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import WorkerForm,AttendanceForm,MaterialsForm,UsageForm
 from django.core.exceptions import ValidationError
 from .models import Material, MaterialUsage,Worker,Attendance
-from .serializers import MaterialSerializer,UserRegistrationSerializer,UserListSerializer
-from rest_framework.generics import RetrieveAPIView
+from .serializers import MaterialSerializer, MaterialUsageSerializer,UserRegistrationSerializer,UserListSerializer,WorkerSerializer, LoginSerializer
+from rest_framework.generics import RetrieveAPIView, ListCreateAPIView
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from .serializers import WorkerSerializer, MaterialSerializer, LoginSerializer
 from rest_framework.permissions import AllowAny
 from django.utils.dateparse import parse_date
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -18,6 +17,11 @@ from django.contrib.auth.forms import UserCreationForm
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.signals import user_logged_in
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework import serializers 
+
+
 
 
 # Create your views here.
@@ -368,3 +372,34 @@ class MaterialDetailview(APIView):
         except Material.DoesNotExist:
             return Response({"error": "Material not found."}, status=status.HTTP_404_NOT_FOUND)
         
+class MaterialUsageListView(ListCreateAPIView):
+    queryset = MaterialUsage.objects.all()
+    serializer_class = MaterialUsageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def use_material(self, serializer):
+        material = serializer.validated_data['material']
+        quantity = serializer.validated_data['quantity']
+
+        if quantity > material.remaining_quantity():
+            raise serializers.ValidationError(
+                f'Cannot use {quantity} {material.get_unit_display()}; only {material.remaining_quantity()} available.'
+            )
+        serializer.save()
+
+class MaterialusageFilterView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        start_date = request.quesry_params.get('start_date')
+        end_date = request.quesry_params.get('end_date')
+
+        if start_date and end_date:
+            start_date = parse_date(start_date)
+            end_date = parse_date(end_date)
+            usage = MaterialUsage.objects.filter(date__range=(start_date, end_date))
+        else:
+            usage = MaterialUsage.objects.all()
+        
+        serializer = MaterialUsageSerializer(usage, many=True)
+        return Response(serializer.data)

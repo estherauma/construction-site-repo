@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import MaterialDetailview, all_used_materials,index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_material, details, edit_material, material_usage, signup,logout_user
+from .views import  MaterialDetailview, MaterialUsageListView, MaterialusageFilterView, all_used_materials,index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_material, details, edit_material, material_usage, signup,logout_user
 from .views import WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, MaterialAllView, MaterialDetail,LoginAPIView,UserRegistrationAPIView,UserListAPIView
 from django.contrib.auth.views import LoginView
 
@@ -18,11 +18,7 @@ urlpatterns = [
     path('material/<int:id>/edit/', edit_material, name="edit"),
     path('material/usage/', material_usage, name="material_usage"),
     path('used_materials/', all_used_materials, name="all_used_materials"),
-    path('api/', include(router.urls)),
-    path('api/materials/', MaterialAllView.as_view(), name='material_create'),
-    path('api/materials/detail/<int:id>/', MaterialDetailview.as_view(), name='material_detail'),
-
-    path('api/materials/detail/<int:id>/', MaterialDetail.as_view(), name='material_detail'),
+    
     path("add_workers/", add_workers, name="add_workers"),
     path("all_workers/", all_workers, name="all_workers"),
     path("update_workers/<int:pk>/", update_workers, name="update_workers"),
@@ -36,6 +32,13 @@ urlpatterns = [
     path('logout/', logout_user, name = 'logout'),
 
     # API URLS
+    path('api/', include(router.urls)),
+    path('api/materials/', MaterialAllView.as_view(), name='material_create'),
+    path('api/materials/detail/<int:id>/', MaterialDetailview.as_view(), name='material_detail'),
+    path('api/materials/detail/<int:id>/', MaterialDetail.as_view(), name='material_detail'),
+    path('api/material_usage/', MaterialUsageListView.as_view(), name='material_usage_list'),
+
+    path('api/material_usage/filter/', MaterialusageFilterView.as_view(), name='material_usage_filter'),
     path("api/workers/", WorkerListAPIView.as_view(), name="workers"),
     path("api/workers/<int:pk>/", WorkerDetailAPIView.as_view(), name="workers"),
     path("api/workers/<int:pk>/update/",WorkerUpdateAPIView.as_view(), name="worker_update"),
@@ -43,4 +46,5 @@ urlpatterns = [
     path('api/login/', LoginAPIView.as_view(), name='api-login'),
     path('api/register/', UserRegistrationAPIView.as_view(), name='user-registration'),
     path('api/users/', UserListAPIView.as_view(), name='user-list'),
+    # path('api-token-auth/', CustomObtainAuthToken.as_view(), name='api_token_auth'),
 ]

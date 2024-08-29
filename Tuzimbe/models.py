@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 import uuid
 from uuid import uuid4
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 
 from django.utils import timezone
 def validate_not_future_date(value):
@@ -136,5 +136,11 @@ class Attendance(models.Model):
     
 
 
-        
+# class Profile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     last_login_ip = models.GenericIPAddressField(null=True, blank=True)
+#     last_login_time = models.DateTimeField(null=True, blank=True)
+
+#     def __str__(self):
+#         return self.user.username
 
