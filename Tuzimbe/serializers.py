@@ -1,10 +1,7 @@
-# from .models import Material
 from rest_framework import serializers
-from .models import MaterialUsage, Worker
-from .models import Material, Worker
+from .models import Material, Worker,Attendance,MaterialUsage
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from rest_framework.authtoken.models import Token
 import re
 
 class  MaterialSerializer(serializers.ModelSerializer):
@@ -49,8 +46,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return password
 
     def validate(self, data):
+        unexpected_fields = set(self.initial_data.keys()) - set(self.fields.keys())
+        if unexpected_fields:
+            raise serializers.ValidationError(f"Unexpected fields: {', '.join(unexpected_fields)}")
+
         if data['password'] != data['password2']:
             raise serializers.ValidationError("Passwords do not match.")
+        
         return data
 
     def create(self, validated_data):
@@ -65,6 +67,11 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        unexpected_fields = set(self.initial_data.keys()) - set(self.fields.keys())
+        if unexpected_fields:
+            raise serializers.ValidationError(f"Unexpected fields: {', '.join(unexpected_fields)}")
+
+
         username = data.get('username')
         password = data.get('password')
 
@@ -86,5 +93,13 @@ class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'date_joined')
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    date = serializers.DateField(format='%Y-%m-%d')
+    time_in = serializers.TimeField(format='%H:%M:%S')
+    time_out = serializers.TimeField(format='%H:%M:%S')
+    class Meta:
+        model = Attendance
+        fields = "__all__"
 
 

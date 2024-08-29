@@ -3,14 +3,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import WorkerForm,AttendanceForm,MaterialsForm,UsageForm
 from django.core.exceptions import ValidationError
 from .models import Material, MaterialUsage,Worker,Attendance
-from .serializers import MaterialSerializer, MaterialUsageSerializer,UserRegistrationSerializer,UserListSerializer,WorkerSerializer, LoginSerializer
+from .serializers import MaterialSerializer, MaterialUsageSerializer,UserRegistrationSerializer,UserListSerializer,WorkerSerializer, LoginSerializer,AttendanceSerializer
 from rest_framework.generics import RetrieveAPIView, ListCreateAPIView
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.utils.dateparse import parse_date
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login,logout
 from django.contrib.auth.forms import UserCreationForm
@@ -29,6 +28,7 @@ from rest_framework import serializers
 # API Views
 
 class UserRegistrationAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -40,6 +40,7 @@ class UserRegistrationAPIView(APIView):
 
 
 class LoginAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -123,6 +124,67 @@ class WorkerUpdateAPIView(APIView):
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         
         worker.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class AttendanceListAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        attendances = Attendance.objects.all()
+        serializer = AttendanceSerializer(attendances, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class AttendanceCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        serializer = AttendanceSerializer(data=request.data)
+        if serializer.is_valid():
+            attendance = serializer.save()
+            return Response(
+                AttendanceSerializer(attendance).data,
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class AttendanceRetrieveUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get_object(self, pk):
+        try:
+            return Attendance.objects.get(pk=pk)
+        except Attendance.DoesNotExist:
+            return None
+
+    def get(self, request, id):
+        attendance = self.get_object(id)
+        if attendance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = AttendanceSerializer(attendance)
+        return Response(serializer.data)
+
+    def put(self, request, id):
+        attendance = self.get_object(id)
+        if attendance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = AttendanceSerializer(attendance, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, id):
+        attendance = self.get_object(id)
+        if attendance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = AttendanceSerializer(attendance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        attendance = self.get_object(id)
+        if attendance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        attendance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
