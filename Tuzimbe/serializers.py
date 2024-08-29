@@ -43,8 +43,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return password
 
     def validate(self, data):
+        unexpected_fields = set(self.initial_data.keys()) - set(self.fields.keys())
+        if unexpected_fields:
+            raise serializers.ValidationError(f"Unexpected fields: {', '.join(unexpected_fields)}")
+
         if data['password'] != data['password2']:
             raise serializers.ValidationError("Passwords do not match.")
+        
         return data
 
     def create(self, validated_data):
@@ -59,6 +64,11 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        unexpected_fields = set(self.initial_data.keys()) - set(self.fields.keys())
+        if unexpected_fields:
+            raise serializers.ValidationError(f"Unexpected fields: {', '.join(unexpected_fields)}")
+
+
         username = data.get('username')
         password = data.get('password')
 
