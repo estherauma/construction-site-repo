@@ -21,7 +21,7 @@
 <body>
     <nav class="navbar navbar-expand-lg" style="background-color: #9394b5">
         <div class="container-fluid" style="margin-left: 20px; font-family: 'Robot'; ">
-          <a class="navbar-brand" style="font-size:35px;" href="{% url 'Tuzimbe:index' %}">Tuzimbe</a>
+          <a class="navbar-brand" style="font-size:35px;" href="{% url 'tuzimbe:index' %}">Tuzimbe</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -37,10 +37,10 @@
                     Workers
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:add_workers' %}">Add Workers</a></li>
-                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:all_workers' %}">All Workers</a></li>
-                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:worker_attendance_form' %}">Add Attendance</a></li>
-                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:attendance_list' %}">Attendance List</a></li>
+                  <li><a class="dropdown-item" href="{% url 'tuzimbe:add_workers' %}">Add Workers</a></li>
+                  <li><a class="dropdown-item" href="{% url 'tuzimbe:all_workers' %}">All Workers</a></li>
+                  <li><a class="dropdown-item" href="{% url 'tuzimbe:worker_attendance_form' %}">Add Attendance</a></li>
+                  <li><a class="dropdown-item" href="{% url 'tuzimbe:attendance_list' %}">Attendance List</a></li>
                 </ul>
               </li>
               <li class="nav-item dropdown">
@@ -48,15 +48,15 @@
                     Materials
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:addmaterials' %}">Add Materials</a></li>
-                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:materials' %}">All Materials</a></li>
-                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:material_usage' %}">Use Materials</a></li>
-                  <li><a class="dropdown-item" href="{% url 'Tuzimbe:all_used_materials' %}">Usage</a></li>
+                  <li><a class="dropdown-item" href="{% url 'tuzimbe:addmaterials' %}">Add Materials</a></li>
+                  <li><a class="dropdown-item" href="{% url 'tuzimbe:materials' %}">All Materials</a></li>
+                  <li><a class="dropdown-item" href="{% url 'tuzimbe:material_usage' %}">Use Materials</a></li>
+                  <li><a class="dropdown-item" href="{% url 'tuzimbe:all_used_materials' %}">Usage</a></li>
                   
                 </ul>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'Tuzimbe:logout' %}">Logout</a>
+                <a class="nav-link" href="{% url 'tuzimbe:logout' %}">Logout</a>
               </li>
             </ul>
             
