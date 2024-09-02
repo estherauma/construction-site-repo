@@ -19,6 +19,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import serializers 
+from django.contrib import messages
 
 
 
@@ -217,6 +218,7 @@ def add_workers(request):
         form = WorkerForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request,'Congratulations, you have successfully added a worker' ,extra_tags='bg-success')
             return redirect('Tuzimbe:all_workers')
     else:
         form = WorkerForm()
@@ -235,6 +237,7 @@ def update_workers(request, pk):
         form = WorkerForm(request.POST, instance=worker)
         if form.is_valid():
             form.save()
+            messages.success(request,'Congratulations, you have successfully updated a worker' ,extra_tags='bg-success')
             return redirect('Tuzimbe:all_workers')
     return render(request, 'workers/update_workers.html', {'form': form})
 
@@ -256,6 +259,7 @@ def worker_attendance(request):
         
         if form.is_valid():
             form.save()
+            messages.success(request,'Congratulations, you have successfully added attendance' ,extra_tags='bg-success')
             return redirect('Tuzimbe:attendance_list')
     return render(request, 'workers/workers_attendance.html', {'form': form})
 
@@ -272,6 +276,7 @@ def update_attendance(request, pk):
         form = AttendanceForm(request.POST, instance=attendance)
         if form.is_valid():
             form.save()
+            messages.success(request,'Congratulations, you have successfully updated attendance' ,extra_tags='bg-success')
             return redirect('Tuzimbe:attendance_list')
     return render(request, 'workers/update_attendance.html', {'form': form})
 
@@ -291,7 +296,6 @@ def add_material(request):
     else:
         form = MaterialsForm()
     return render(request, 'materials/add_materials.html', {'form': form, 'error_message': error_message})
-
 
 
 @login_required
