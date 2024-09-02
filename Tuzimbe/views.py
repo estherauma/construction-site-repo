@@ -10,26 +10,20 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.utils.dateparse import parse_date
-from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login,logout
 from django.contrib.auth.forms import UserCreationForm
-from rest_framework.authtoken.models import Token
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in
-from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import serializers 
 from django.contrib import messages
-
-
-
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
 
 # API Views
 
 class UserRegistrationAPIView(APIView):
-    permission_classes = [AllowAny]
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -39,38 +33,36 @@ class UserRegistrationAPIView(APIView):
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
-            token, created = Token.objects.get_or_create(user=user)
+            refresh = RefreshToken.for_user(user)
+            access_token = refresh.access_token
+            
             return Response({
                 'username': user.username,
-                'password': request.data['password'],
-                'token': token.key
+                'access': str(access_token),
+                'refresh': str(refresh)
             }, status=status.HTTP_200_OK)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
     def get(self, request):
         users = User.objects.all()
         serializer = UserListSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class WorkerListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
     def get(self, request):
         workers = Worker.objects.all()
         serializer = WorkerSerializer(workers, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-
 class WorkerDetailAPIView(APIView):
-    permission_classes = [IsAuthenticated]
     def get(self,request, pk):
         try:
             worker = Worker.objects.get(pk=pk)
@@ -81,7 +73,6 @@ class WorkerDetailAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class WorkerCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = WorkerSerializer(data=request.data)
         if serializer.is_valid():
@@ -90,7 +81,6 @@ class WorkerCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class WorkerUpdateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
     def get_object(self, pk):
         try:
             return Worker.objects.get(pk=pk)
@@ -128,14 +118,12 @@ class WorkerUpdateAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class AttendanceListAPIView(APIView):
-    permission_classes = [IsAuthenticated]
     def get(self, request):
         attendances = Attendance.objects.all()
         serializer = AttendanceSerializer(attendances, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class AttendanceCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = AttendanceSerializer(data=request.data)
         if serializer.is_valid():
@@ -147,7 +135,6 @@ class AttendanceCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class AttendanceRetrieveUpdateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
     def get_object(self, pk):
         try:
             return Attendance.objects.get(pk=pk)
@@ -187,7 +174,6 @@ class AttendanceRetrieveUpdateAPIView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         attendance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 #Template Views
 def index(request):
@@ -356,14 +342,12 @@ def all_used_materials(request):
     
     return render(request, 'materials/all_used_materials.html', {'used_materials': used_materials})
 
-
 class MaterialDetail(RetrieveAPIView):
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
     lookup_field = 'id'
 
 class MaterialAllView(APIView):
-    permission_classes = [IsAuthenticated]
     def get(self, request):
         materials = Material.objects.all()
         serializer = MaterialSerializer(materials, many=True)
@@ -394,15 +378,11 @@ class MaterialAllView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
        
 
-
-
 class MaterialDetailview(APIView):
-    permission_classes = [IsAuthenticated]
     def get(self, request, id,):
         material = get_object_or_404(Material, id=id)
         serializer = MaterialSerializer(material)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
     def put(self, request, id, *args, **kwargs):
         material = get_object_or_404(Material, id=id)
@@ -441,7 +421,6 @@ class MaterialDetailview(APIView):
 class MaterialUsageListView(ListCreateAPIView):
     queryset = MaterialUsage.objects.all()
     serializer_class = MaterialUsageSerializer
-    permission_classes = [IsAuthenticated]
 
     def use_material(self, serializer):
         material = serializer.validated_data['material']
@@ -454,7 +433,6 @@ class MaterialUsageListView(ListCreateAPIView):
         serializer.save()
 
 class MaterialusageFilterView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         start_date = request.quesry_params.get('start_date')
