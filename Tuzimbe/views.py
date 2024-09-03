@@ -18,12 +18,25 @@ from django.contrib.auth.signals import user_logged_in
 from rest_framework import serializers 
 from django.contrib import messages
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.permissions import BasePermission
+
 
 # Create your views here.
 
 # API Views
 
+class CustomIsAuthenticated(BasePermission):
+    def has_permission(self, request, view):
+        if request.user and request.user.is_authenticated:
+            return True
+        raise AuthenticationFailed('Please provide authentication credentials')
+
+
 class UserRegistrationAPIView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -35,6 +48,7 @@ class UserRegistrationAPIView(APIView):
 
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
+    
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -51,18 +65,24 @@ class LoginAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserListAPIView(APIView):
+    permission_classes = [CustomIsAuthenticated]
+
     def get(self, request):
         users = User.objects.all()
         serializer = UserListSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class WorkerListAPIView(APIView):
+    permission_classes = [CustomIsAuthenticated]
+
     def get(self, request):
         workers = Worker.objects.all()
         serializer = WorkerSerializer(workers, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class WorkerDetailAPIView(APIView):
+    permission_classes = [CustomIsAuthenticated]
+
     def get(self,request, pk):
         try:
             worker = Worker.objects.get(pk=pk)
@@ -73,6 +93,8 @@ class WorkerDetailAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class WorkerCreateAPIView(APIView):
+    permission_classes = [CustomIsAuthenticated]
+
     def post(self, request):
         serializer = WorkerSerializer(data=request.data)
         if serializer.is_valid():
@@ -81,6 +103,8 @@ class WorkerCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class WorkerUpdateAPIView(APIView):
+    permission_classes = [CustomIsAuthenticated]
+
     def get_object(self, pk):
         try:
             return Worker.objects.get(pk=pk)
@@ -118,12 +142,16 @@ class WorkerUpdateAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class AttendanceListAPIView(APIView):
+    permission_classes = [CustomIsAuthenticated]
+
     def get(self, request):
         attendances = Attendance.objects.all()
         serializer = AttendanceSerializer(attendances, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class AttendanceCreateAPIView(APIView):
+    permission_classes = [CustomIsAuthenticated]
+
     def post(self, request):
         serializer = AttendanceSerializer(data=request.data)
         if serializer.is_valid():
@@ -135,6 +163,8 @@ class AttendanceCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class AttendanceRetrieveUpdateAPIView(APIView):
+    permission_classes = [CustomIsAuthenticated]
+
     def get_object(self, pk):
         try:
             return Attendance.objects.get(pk=pk)
@@ -332,7 +362,6 @@ def all_used_materials(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
-
     if start_date and end_date:
         start_date = parse_date(start_date)
         end_date = parse_date(end_date)
@@ -343,11 +372,15 @@ def all_used_materials(request):
     return render(request, 'materials/all_used_materials.html', {'used_materials': used_materials})
 
 class MaterialDetail(RetrieveAPIView):
+    permission_classes = [CustomIsAuthenticated]
+
     queryset = Material.objects.all()
     serializer_class = MaterialSerializer
     lookup_field = 'id'
 
 class MaterialAllView(APIView):
+    permission_classes = [CustomIsAuthenticated]
+
     def get(self, request):
         materials = Material.objects.all()
         serializer = MaterialSerializer(materials, many=True)
@@ -377,8 +410,9 @@ class MaterialAllView(APIView):
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
        
-
 class MaterialDetailview(APIView):
+    permission_classes = [CustomIsAuthenticated]
+
     def get(self, request, id,):
         material = get_object_or_404(Material, id=id)
         serializer = MaterialSerializer(material)
@@ -419,6 +453,8 @@ class MaterialDetailview(APIView):
             return Response({"error": "Material not found."}, status=status.HTTP_404_NOT_FOUND)
         
 class MaterialUsageListView(ListCreateAPIView):
+    permission_classes = [CustomIsAuthenticated]
+
     queryset = MaterialUsage.objects.all()
     serializer_class = MaterialUsageSerializer
 
@@ -433,6 +469,7 @@ class MaterialUsageListView(ListCreateAPIView):
         serializer.save()
 
 class MaterialusageFilterView(APIView):
+    permission_classes = [CustomIsAuthenticated]
 
     def get(self, request):
         start_date = request.quesry_params.get('start_date')
