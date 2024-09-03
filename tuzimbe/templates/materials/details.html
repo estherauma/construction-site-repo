@@ -23,8 +23,8 @@
             {% endfor %}
         </ul>
         <div class="card-footer text-right">
-            <a href={% url 'Tuzimbe:materials' %} class="btn btn-secondary">Back</a>
-            <a href={% url 'Tuzimbe:edit' material.id %} class="btn btn-secondary">Edit</a>
+            <a href={% url 'tuzimbe:materials' %} class="btn btn-secondary">Back</a>
+            <a href={% url 'tuzimbe:edit' material.id %} class="btn btn-secondary">Edit</a>
             <button class="btn btn-danger" onclick="deleteMaterial({{material.id}})">Delete</button>
         </div>
     </div>
@@ -42,7 +42,7 @@
                 }
             }).then(response => {
                 if (response.ok) {
-                    window.location.href = "{% url 'Tuzimbe:materials' %}"; 
+                    window.location.href = "{% url 'tuzimbe:materials' %}"; 
                 } else if (response.status === 404) {
                     alert('Material not found.');
                 } else {

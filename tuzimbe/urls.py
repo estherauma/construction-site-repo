@@ -5,7 +5,7 @@ from .views import MaterialUsageListView, MaterialusageFilterView,WorkerListAPIV
 from django.contrib.auth.views import LoginView
 
 router = DefaultRouter() 
-app_name = "Tuzimbe"
+app_name = "tuzimbe"
 
 
 urlpatterns = [

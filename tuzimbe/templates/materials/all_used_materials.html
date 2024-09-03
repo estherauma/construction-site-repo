@@ -5,7 +5,7 @@
 <button id="toggle-filter" class="btn btn-primary">Filter</button>
 
 <div id="filter-form">
-    <form id="date-filter-form" method="GET" action="{% url 'Tuzimbe:all_used_materials' %}">
+    <form id="date-filter-form" method="GET" action="{% url 'tuzimbe:all_used_materials' %}">
         <label for="start_date">Start Date:</label>
         <input type="date" id="start_date" name="start_date" value="{{ request.GET.start_date }}">
         
@@ -43,7 +43,7 @@
                 <td>{{ material_usage.total_price }}</td>
                 <td>{{ material_usage.date }}</td>
                 <td>
-                    <a href="{% url 'Tuzimbe:details' material_usage.material.id %}" class="btn btn-outline-primary btn-sm details-btn">
+                    <a href="{% url 'tuzimbe:details' material_usage.material.id %}" class="btn btn-outline-primary btn-sm details-btn">
                         Details
                     </a>
                 </td>

@@ -188,7 +188,7 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user) 
-            return redirect('Tuzimbe:login')
+            return redirect('tuzimbe:login')
     else:
         form = UserCreationForm()
     
@@ -205,7 +205,7 @@ def add_workers(request):
         if form.is_valid():
             form.save()
             messages.success(request,'Congratulations, you have successfully added a worker' ,extra_tags='bg-success')
-            return redirect('Tuzimbe:all_workers')
+            return redirect('tuzimbe:all_workers')
     else:
         form = WorkerForm()
     return render(request, 'workers/add_workers.html', {'form': form})
@@ -224,7 +224,7 @@ def update_workers(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request,'Congratulations, you have successfully updated a worker' ,extra_tags='bg-success')
-            return redirect('Tuzimbe:all_workers')
+            return redirect('tuzimbe:all_workers')
     return render(request, 'workers/update_workers.html', {'form': form})
 
 @login_required
@@ -236,7 +236,7 @@ def worker_details(request, pk):
 def delete_workers(request, pk):
     worker = Worker.objects.get(id=pk)
     worker.delete()
-    return redirect('Tuzimbe:all_workers')
+    return redirect('tuzimbe:all_workers')
 
 @login_required
 def worker_attendance(request):
@@ -246,7 +246,7 @@ def worker_attendance(request):
         if form.is_valid():
             form.save()
             messages.success(request,'Congratulations, you have successfully added attendance' ,extra_tags='bg-success')
-            return redirect('Tuzimbe:attendance_list')
+            return redirect('tuzimbe:attendance_list')
     return render(request, 'workers/workers_attendance.html', {'form': form})
 
 @login_required
@@ -263,7 +263,7 @@ def update_attendance(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request,'Congratulations, you have successfully updated attendance' ,extra_tags='bg-success')
-            return redirect('Tuzimbe:attendance_list')
+            return redirect('tuzimbe:attendance_list')
     return render(request, 'workers/update_attendance.html', {'form': form})
 
 @login_required
@@ -274,7 +274,7 @@ def add_material(request):
         if form.is_valid():
             try:
                 form.save()
-                return redirect('Tuzimbe:materials')
+                return redirect('tuzimbe:materials')
             except ValidationError as e:
                 error_message = e.message
         else:
@@ -305,7 +305,7 @@ def edit_material(request, id):
         if form.is_valid():
             try:
                 form.save()
-                return redirect('Tuzimbe:details', id=material.id)
+                return redirect('tuzimbe:details', id=material.id)
             except ValidationError as e:
                 error_message = e.message
         else:
@@ -321,7 +321,7 @@ def material_usage(request):
         if form.is_valid():
             try:
                 form.save()
-                return redirect('Tuzimbe:materials')
+                return redirect('tuzimbe:materials')
             except ValueError as e:
                 form.add_error(None, str(e))
     else:
