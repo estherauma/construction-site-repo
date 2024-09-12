@@ -4,6 +4,7 @@ from .views import  all_used_materials,index, base, add_workers,all_workers,upda
 from .views import MaterialUsageListView, MaterialusageFilterView,WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, MaterialAllView, MaterialDetail,LoginAPIView,UserRegistrationAPIView,UserListAPIView,MaterialDetailview,AttendanceListAPIView,AttendanceCreateAPIView,AttendanceRetrieveUpdateAPIView
 from django.contrib.auth.views import LoginView
 from . import views
+from .views import print_data
 
 router = DefaultRouter() 
 app_name = "tuzimbe"
@@ -31,6 +32,7 @@ urlpatterns = [
     path('signup/', signup, name='signup'),
     path('logout/', logout_user, name = 'logout'),
     path("products/", views.product_list, name="products"),
+    path('print-data/', print_data, name='print-data'),
 
     # API URLS
     path('api/', include(router.urls)),

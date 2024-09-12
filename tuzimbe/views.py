@@ -18,7 +18,8 @@ from django.contrib.auth.signals import user_logged_in
 from rest_framework import serializers 
 from django.contrib import messages
 from rest_framework_simplejwt.tokens import RefreshToken
-from .services import fetch_products
+from .services import fetch_products,fetch_data
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -455,3 +456,12 @@ def product_list(request):
     products = fetch_products()
     print(products)
     return render(request, 'products.html', {'products': products})
+
+def print_data(request):
+    data = fetch_data()
+    if data:
+        print(data)  
+        return HttpResponse("Data printed to console. Check your terminal.")
+    else:
+        return HttpResponse("Failed to retrieve data.")
+
