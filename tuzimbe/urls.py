@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import  all_used_materials,index, base, add_workers,all_workers,update_workers,worker_details,delete_workers,worker_attendance,attendance_list,update_attendance, add_material, all_material, details, edit_material, material_usage, signup,logout_user
 from .views import MaterialUsageListView, MaterialusageFilterView,WorkerListAPIView, WorkerDetailAPIView, WorkerUpdateAPIView, WorkerCreateAPIView, MaterialAllView, MaterialDetail,LoginAPIView,UserRegistrationAPIView,UserListAPIView,MaterialDetailview,AttendanceListAPIView,AttendanceCreateAPIView,AttendanceRetrieveUpdateAPIView
 from django.contrib.auth.views import LoginView
+from . import views
 
 router = DefaultRouter() 
 app_name = "tuzimbe"
@@ -29,6 +30,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(template_name ='auth/login.html'), name = 'login'),
     path('signup/', signup, name='signup'),
     path('logout/', logout_user, name = 'logout'),
+    path("products/", views.product_list, name="products"),
 
     # API URLS
     path('api/', include(router.urls)),
