@@ -18,6 +18,7 @@ from django.contrib.auth.signals import user_logged_in
 from rest_framework import serializers 
 from django.contrib import messages
 from rest_framework_simplejwt.tokens import RefreshToken
+from .services import fetch_products
 
 # Create your views here.
 
@@ -447,3 +448,10 @@ class MaterialusageFilterView(APIView):
         
         serializer = MaterialUsageSerializer(usage, many=True)
         return Response(serializer.data)
+    
+    
+
+def product_list(request):
+    products = fetch_products()
+    print(products)
+    return render(request, 'products.html', {'products': products})
