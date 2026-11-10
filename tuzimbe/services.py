@@ -1,4 +1,5 @@
 import requests
+from .models import AggregatedData
 
 STRAPI_BASE_URL = "http://localhost:1337/api"
 
@@ -25,7 +26,11 @@ def fetch_data(page=1, page_size=10, sort_by="page_title", locale="en"):
     
     if response.status_code == 200:
         try:
-            return response.json()
+            data = response.json()
+            
+            AggregatedData.objects.create(content=data)
+
+            return data 
         except ValueError as e:
             print("JSON Decode Error:", e)
             return None

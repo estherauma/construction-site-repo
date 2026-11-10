@@ -133,14 +133,11 @@ class Attendance(models.Model):
         
     def __str__(self):
         return f"{self.worker.first_name} {self.worker.last_name} {self.date}"
+   
+class AggregatedData(models.Model):
+    content = models.JSONField()
     
-
-
-# class Profile(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-#     last_login_ip = models.GenericIPAddressField(null=True, blank=True)
-#     last_login_time = models.DateTimeField(null=True, blank=True)
-
-#     def __str__(self):
-#         return self.user.username
+    def __str__(self):
+        return f"Data entry from {self.pk}"
+    
 
